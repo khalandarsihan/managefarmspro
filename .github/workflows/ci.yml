@@ -141,6 +141,15 @@ jobs:
           fi
         id: ngrok-url
 
+      - name: Display Ngrok URL
+        run: cat ngrok_url.txt
+
+      - name: Upload Ngrok URL Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ngrok-url
+          path: ngrok_url.txt
+
       - name: Comment on PR with Ngrok URL
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v4
