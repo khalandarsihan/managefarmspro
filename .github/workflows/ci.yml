@@ -125,7 +125,7 @@ jobs:
 
       - name: Get Ngrok URL
         run: |
-          sleep 5
+          sleep 10
           curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url > ngrok_url.txt
         id: ngrok-url
 
