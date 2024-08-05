@@ -117,7 +117,7 @@ jobs:
           ps aux | grep 'bench serve'
 
       - name: Increase Sleep Time
-        run: sleep 60  # Increase sleep time to ensure the app is fully started
+        run: sleep 10  # Increase sleep time to ensure the app is fully started
 
       - name: Start Ngrok Tunnel
         uses: luisboto/ngrok-tunnel-action@v0.1.7.2
