@@ -117,7 +117,7 @@ jobs:
           ps aux | grep 'bench serve'
 
       - name: Increase Sleep Time
-        run: sleep 10  # Increase sleep time to ensure the app is fully started
+        run: sleep 60  # Increase sleep time to ensure the app is fully started
 
       - name: Download and Install Ngrok
         run: |
@@ -125,8 +125,8 @@ jobs:
           echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
           sudo apt update
           sudo apt install ngrok
-          wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
-          unzip ngrok-stable-linux-amd64.zip
+          wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip -O ngrok.zip
+          unzip ngrok.zip
           chmod +x ngrok
 
       - name: Start Ngrok Tunnel
