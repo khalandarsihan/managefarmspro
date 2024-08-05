@@ -119,17 +119,25 @@ jobs:
       - name: Increase Sleep Time
         run: sleep 10  # Increase sleep time to ensure the app is fully started
 
+      - name: Download and Install Ngrok
+        run: |
+          curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+          echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
+          sudo apt update
+          sudo apt install ngrok
+          wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+          unzip ngrok-stable-linux-amd64.zip
+          chmod +x ngrok
+
       - name: Start Ngrok Tunnel
-        uses: luisboto/ngrok-tunnel-action@v0.1.7.2
-        with:
-          timeout: 1h
-          port: 8000
-          ngrok_authtoken: ${{ secrets.NGROK_AUTHTOKEN }}
-          tunnel_type: http
-          save_url_to_filename: ngrok_url.txt
+        run: |
+          ./ngrok authtoken 2kEeKRMxCDj0twz6lofpuFsI7RE_3acm1ZDT8KXAS3YBdBsAs
+          nohup ./ngrok http --host-header=rewrite development.localhost:8000 &
 
       - name: Get Ngrok URL
         run: |
+          sleep 15  # Increase sleep time to ensure Ngrok tunnel is fully up
+          curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url > ngrok_url.txt
           if [ ! -s ngrok_url.txt ]; then
             echo "Ngrok URL file is empty. Exiting with error."
             exit 1
