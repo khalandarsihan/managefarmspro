@@ -127,19 +127,13 @@ jobs:
           sudo apt install ngrok
 
       - name: Start Ngrok Tunnel
-        run: |
-          ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
-          nohup ngrok tcp 8000 &
-
-      - name: Get Ngrok URL
-        run: |
-          sleep 15  # Increase sleep time to ensure Ngrok tunnel is fully up
-          curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url > ngrok_url.txt
-          if [ ! -s ngrok_url.txt ]; then
-            echo "Ngrok URL file is empty. Exiting with error."
-            exit 1
-          fi
-        id: ngrok-url
+        uses: luisboto/ngrok-tunnel-action@v0.1.7.2
+        with:
+          timeout: 1h
+          port: 8000
+          ngrok_authtoken: ${{ secrets.NGROK_AUTH_TOKEN }}
+          tunnel_type: tcp
+          save_url_to_filename: ngrok_url.txt
 
       - name: Display Ngrok URL
         run: cat ngrok_url.txt
