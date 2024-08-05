@@ -128,7 +128,7 @@ jobs:
 
       - name: Get Ngrok URL
         run: |
-          sleep 15  # Increase sleep time to ensure Ngrok tunnel is fully up
+          sleep 60  # Increase sleep time to ensure Ngrok tunnel is fully up
           curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url > ngrok_url.txt
           if [ ! -s ngrok_url.txt ]; then
             echo "Ngrok URL file is empty. Exiting with error."
@@ -153,4 +153,8 @@ jobs:
               repo: context.repo.repo,
               body: `The Frappe site for this PR is available at: ${url}`
             });
+
+      - name: Verify Ngrok Status
+        run: |
+          curl -s http://localhost:4040/api/tunnels
 
