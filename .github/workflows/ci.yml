@@ -127,14 +127,16 @@ jobs:
           sudo apt install ngrok
 
       - name: Start Ngrok Tunnel
+        env:
+          NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
         run: |
-          ngrok authtoken 2kEeKRMxCDj0twz6lofpuFsI7RE_3acm1ZDT8KXAS3YBdBsAs
-          nohup ngrok http --host-header=rewrite development.localhost:8000 &
-
+          ngrok config add-authtoken $NGROK_AUTHTOKEN
+          nohup ngrok http --host-header=rewrite 127.0.0.1:8000 &
+          
       - name: Get Ngrok URL
         run: |
           sleep 15  # Increase sleep time to ensure Ngrok tunnel is fully up
-          curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url > ngrok_url.txt
+          curl -s http://127.0.0.1:4040/api/tunnels | jq -r .tunnels[0].public_url > ngrok_url.txt
           if [ ! -s ngrok_url.txt ]; then
             echo "Ngrok URL file is empty. Exiting with error."
             exit 1
@@ -170,5 +172,5 @@ jobs:
 
       - name: Test Frappe App
         run: |
-          curl -v http://development.localhost:8000
+          curl -v http://127.0.0.1:8000
 
