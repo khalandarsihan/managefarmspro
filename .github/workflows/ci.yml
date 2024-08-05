@@ -6,11 +6,6 @@ on:
       - main
   pull_request:
 
-permissions:
-  contents: read
-  issues: write
-  pull-requests: write
-
 concurrency:
   group: main-managefarmspro-${{ github.event.number }}
   cancel-in-progress: true
@@ -40,21 +35,30 @@ jobs:
         options: --health-cmd="mariadb-admin ping" --health-interval=5s --health-timeout=2s --health-retries=3
 
     steps:
-      - name: Checkout repository
+      - name: Clone
         uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/frappe-app:latest
 
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-
-      - name: Install dependencies
-        run: |
-          pip install pre-commit
-          pre-commit install
-
-      - name: Run pre-commit
-        run: pre-commit run --all-files
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -88,81 +92,48 @@ jobs:
           sudo apt update
           sudo apt-get install mariadb-client-10.6
 
-      - name: Setup Frappe Bench
+      - name: Setup Bench
         run: |
           pip install frappe-bench
           bench init --skip-redis-config-generation --skip-assets --python "$(which python)" ~/frappe-bench
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 
-      - name: Install Frappe App
+      - name: Install App
         working-directory: /home/runner/frappe-bench
         run: |
           bench get-app managefarmspro $GITHUB_WORKSPACE
           bench setup requirements --dev
-          bench new-site --db-root-password root --admin-password admin development.localhost
-          bench --site development.localhost install-app managefarmspro
+          bench new-site --db-root-password root --admin-password admin test_site
+          bench --site test_site install-app managefarmspro
           bench build
         env:
           CI: 'Yes'
 
-      - name: Start Frappe App
+      - name: Run Frappe Bench
         working-directory: /home/runner/frappe-bench
         run: |
-          echo "web: bench serve --port 8000" > Procfile
-          nohup bench start &
-
-      - name: Verify Bench Start
-        run: |
-          ps aux | grep 'bench serve'
-
-      - name: Increase Sleep Time
-        run: sleep 10  # Reduce sleep time to 10 seconds
+          bench start &
+          sleep 30
 
       - name: Install Ngrok
         run: |
-          curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
-          echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
-          sudo apt update
-          sudo apt install ngrok
+          curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc > /dev/null &&
+          echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list &&
+          sudo apt-get update && sudo apt-get install ngrok
 
-      - name: Start Ngrok Tunnel
-        uses: luisboto/ngrok-tunnel-action@v0.1.7.2
-        with:
-          timeout: 1h
-          port: 8000
-          ngrok_authtoken: ${{ secrets.NGROK_AUTH_TOKEN }}
-          tunnel_type: tcp
-          save_url_to_filename: ngrok_url.txt
-
-      - name: Display Ngrok URL
-        run: cat ngrok_url.txt
-
-      - name: Upload Ngrok URL Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: ngrok-url
-          path: ngrok_url.txt
-
-      - name: Comment on PR with Ngrok URL
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const url = fs.readFileSync('ngrok_url.txt', 'utf8').trim();
-            if (!url) {
-              throw new Error('Ngrok URL is empty');
-            }
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `The Frappe site for this PR is available at: ${url}`
-            });
-
-      - name: Test Frappe App
+      - name: Expose Localhost with Ngrok
         run: |
-          curl -v http://development.localhost:8000
+          ngrok config add-authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
+          ngrok http 8000 &
+          sleep 10
+          curl --retry 10 --retry-connrefused --retry-delay 5 http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url
+
+      - name: Run Tests
+        working-directory: /home/runner/frappe-bench
+        run: |
+          bench --site test_site set-config allow_tests true
+          bench --site test_site run-tests --app managefarmspro
+        env:
+          TYPE: server
 
