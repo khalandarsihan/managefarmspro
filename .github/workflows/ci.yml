@@ -43,15 +43,18 @@ jobs:
       - name: Clone
         uses: actions/checkout@v3
 
-      - name: Find tests
-        run: |
-          echo "Finding tests"
-          grep -rn "def test" > /dev/null
-
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install pre-commit
+          pre-commit install
+
+      - name: Run pre-commit
+        run: pre-commit run --all-files
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -125,8 +128,12 @@ jobs:
 
       - name: Get Ngrok URL
         run: |
-          sleep 10
+          sleep 15  # Increase sleep time to ensure Ngrok tunnel is fully up
           curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url > ngrok_url.txt
+          if [ ! -s ngrok_url.txt ]; then
+            echo "Ngrok URL file is empty. Exiting with error."
+            exit 1
+          fi
         id: ngrok-url
 
       - name: Comment on PR with Ngrok URL
@@ -135,7 +142,11 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const url = require('fs').readFileSync('ngrok_url.txt', 'utf8').trim();
+            const fs = require('fs');
+            const url = fs.readFileSync('ngrok_url.txt', 'utf8').trim();
+            if (!url) {
+              throw new Error('Ngrok URL is empty');
+            }
             github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
