@@ -32,6 +32,10 @@ RUN useradd -m frappe \
 # Set the working directory
 WORKDIR /workspace/development
 
+# Create necessary directories and set permissions
+RUN mkdir -p /workspace/development/frappe-bench \
+    && chown -R frappe:frappe /workspace/development
+
 # Switch to the non-root user
 USER frappe
 
@@ -39,11 +43,15 @@ USER frappe
 RUN bench init --skip-redis-config-generation --skip-assets --python "$(which python)" frappe-bench
 
 # Set up MariaDB server settings
-RUN sudo mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'" \
-    && sudo mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+USER root
+RUN mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'" \
+    && mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 
 # Copy the Frappe app into the container
 COPY . /workspace/development/frappe-bench/apps/managefarmspro
+
+# Switch back to the non-root user
+USER frappe
 
 # Get the Frappe app
 RUN bench get-app managefarmspro /workspace/development/frappe-bench/apps/managefarmspro
