@@ -9,7 +9,7 @@ ENV LANG=C.UTF-8 \
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-    mariadb-client \
+    mariadb-server \
     curl \
     gnupg \
     git \
@@ -41,15 +41,16 @@ RUN mkdir -p /workspace/development/frappe-bench \
 USER frappe
 
 # Initialize a new bench
-RUN bench init --skip-redis-config-generation --skip-assets --python "$(which python)" frappe-bench
+RUN rm -rf /workspace/development/frappe-bench && bench init --skip-redis-config-generation --skip-assets --python "$(which python)" frappe-bench
 
 # Switch to root user to set up MariaDB
 USER root
 
-# Set up MariaDB server settings
+# Start MariaDB service and configure it
 RUN service mysql start && \
-    mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'" \
-    && mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+    mysqladmin -u root password 'root' && \
+    mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'" && \
+    mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 
 # Switch back to non-root user
 USER frappe
