@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     gnupg \
     git \
+    sudo \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -24,15 +25,22 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 # Install Frappe Bench
 RUN pip install frappe-bench
 
+# Create a non-root user
+RUN useradd -m frappe \
+    && echo "frappe ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
 # Set the working directory
 WORKDIR /workspace/development
+
+# Switch to the non-root user
+USER frappe
 
 # Initialize a new bench
 RUN bench init --skip-redis-config-generation --skip-assets --python "$(which python)" frappe-bench
 
 # Set up MariaDB server settings
-RUN mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'" \
-    && mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+RUN sudo mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'" \
+    && sudo mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 
 # Copy the Frappe app into the container
 COPY . /workspace/development/frappe-bench/apps/managefarmspro
