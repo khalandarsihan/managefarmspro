@@ -131,7 +131,7 @@ jobs:
           NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
         run: |
           ngrok config add-authtoken $NGROK_AUTHTOKEN
-          nohup ngrok http --host-header=rewrite 127.0.0.1:8000 &
+          nohup ngrok http --host-header=rewrite development.localhost:8000 &
           
       - name: Get Ngrok URL
         run: |
@@ -172,5 +172,5 @@ jobs:
 
       - name: Test Frappe App
         run: |
-          curl -v http://127.0.0.1:8000
+          curl -v http://development.localhost:8000
 
