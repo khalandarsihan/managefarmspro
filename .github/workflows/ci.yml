@@ -74,14 +74,15 @@ jobs:
           sudo apt-get install mariadb-client-10.6
 
       - name: Set up Frappe Bench
+        working-directory: /workspace/development
         run: |
           pip install frappe-bench
-          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" ~/frappe-bench
+          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" frappe-bench
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 
       - name: Install Frappe App
-        working-directory: /home/runner/frappe-bench
+        working-directory: /workspace/development/frappe-bench
         run: |
           bench get-app managefarmspro $GITHUB_WORKSPACE
           bench setup requirements --dev
@@ -90,8 +91,10 @@ jobs:
           bench build
 
       - name: Start Frappe App
+        working-directory: /workspace/development/frappe-bench
         run: |
-          bench start &
+          echo "web: bench serve --port 8000" > Procfile
+          nohup bench start &
 
       - name: Check Frappe App
         run: |
