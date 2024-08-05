@@ -6,6 +6,11 @@ on:
       - main
   pull_request:
 
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
 concurrency:
   group: main-managefarmspro-${{ github.event.number }}
   cancel-in-progress: true
@@ -128,8 +133,9 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v4
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const url = '${{ steps.ngrok-url.outputs.result }}';
+            const url = require('fs').readFileSync('ngrok_url.txt', 'utf8').trim();
             github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
