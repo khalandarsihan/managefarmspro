@@ -129,7 +129,7 @@ jobs:
       - name: Start Ngrok Tunnel
         run: |
           ngrok authtoken 2kEeKRMxCDj0twz6lofpuFsI7RE_3acm1ZDT8KXAS3YBdBsAs
-          nohup ngrok http --host-header=rewrite development.localhost:8000 &
+          nohup ngrok http --host-header="development.localhost:8000" 8000 &
 
       - name: Get Ngrok URL
         run: |
