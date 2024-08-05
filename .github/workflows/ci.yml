@@ -119,7 +119,7 @@ jobs:
       - name: Increase Sleep Time
         run: sleep 10  # Reduce sleep time to 10 seconds
 
-      - name: Download and Install Latest Ngrok
+      - name: Install Ngrok
         run: |
           curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
           echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
@@ -127,11 +127,9 @@ jobs:
           sudo apt install ngrok
 
       - name: Start Ngrok Tunnel
-        uses: apogiatzis/ngrok-tunneling-action@v0.1.4
-        with:
-          timeout: 1h
-          port: 8000
-          ngrok_authtoken: ${{ secrets.NGROK_AUTH_TOKEN }}
+        run: |
+          ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
+          nohup ngrok tcp 8000 &
 
       - name: Get Ngrok URL
         run: |
