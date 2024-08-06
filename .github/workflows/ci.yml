@@ -136,41 +136,49 @@ jobs:
         run: |
           nohup bench --site development.localhost ngrok --bind-tls &
 
-      - name: Get Ngrok URL
+      - name: Get Ngrok URLs
         run: |
           sleep 10  # Increase sleep time to ensure Ngrok tunnel is fully up
-          curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url > ngrok_url.txt
-          if [ ! -s ngrok_url.txt ]; then
-            echo "Ngrok URL file is empty. Exiting with error."
+          curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[] | select(.proto=="https") | .public_url' > ngrok_https_url.txt
+          curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[] | select(.proto=="http") | .public_url' > ngrok_http_url.txt
+          if [ ! -s ngrok_https_url.txt ] || [ ! -s ngrok_http_url.txt ]; then
+            echo "Ngrok URLs file is empty. Exiting with error."
             exit 1
           fi
-        id: ngrok-url
+        id: ngrok-urls
 
-      - name: Display Ngrok URL
-        run: cat ngrok_url.txt
+      - name: Display Ngrok URLs
+        run: |
+          echo "HTTPS URL:"
+          cat ngrok_https_url.txt
+          echo "HTTP URL:"
+          cat ngrok_http_url.txt
 
-      - name: Upload Ngrok URL Artifact
+      - name: Upload Ngrok URLs Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ngrok-url
-          path: ngrok_url.txt
+          name: ngrok-urls
+          path: |
+            ngrok_https_url.txt
+            ngrok_http_url.txt
 
-      - name: Comment on PR with Ngrok URL
+      - name: Comment on PR with Ngrok URLs
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            const url = fs.readFileSync('ngrok_url.txt', 'utf8').trim();
-            if (!url) {
-              throw new Error('Ngrok URL is empty');
+            const https_url = fs.readFileSync('ngrok_https_url.txt', 'utf8').trim();
+            const http_url = fs.readFileSync('ngrok_http_url.txt', 'utf8').trim();
+            if (!https_url || !http_url) {
+              throw new Error('Ngrok URLs are empty');
             }
             github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `The Frappe site for this PR is available at: ${url}`
+              body: `The Frappe site for this PR is available at: \n- HTTPS URL: ${https_url}\n- HTTP URL: ${http_url}`
             });
 
       - name: Test Frappe App
