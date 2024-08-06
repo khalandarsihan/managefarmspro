@@ -119,9 +119,17 @@ jobs:
       - name: Increase Sleep Time
         run: sleep 10  # Increase sleep time to 10 seconds
 
+      - name: Create Docker Network
+        run: docker network create frappe_network
+
+      - name: Start Frappe Container in Custom Network
+        run: |
+          docker run -d --network frappe_network --name frappe_container frappe/bench:latest sleep infinity
+
       - name: Install and Start Ngrok Inside Container
         run: |
-          docker exec -i devcontainer-frappe-1 bash -c '
+          CONTAINER_ID=$(docker ps -q -f "name=frappe_container")
+          docker exec -i $CONTAINER_ID bash -c '
           curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null &&
           echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list &&
           sudo apt update && sudo apt install ngrok -y &&
