@@ -117,7 +117,7 @@ jobs:
           ps aux | grep 'bench serve'
 
       - name: Increase Sleep Time
-        run: sleep 10  # Increase sleep time to 10 seconds
+        run: sleep 20  # Increase sleep time to ensure Frappe is fully started
 
       - name: Download and Install Latest Ngrok
         run: |
@@ -128,12 +128,17 @@ jobs:
 
       - name: Start Ngrok Tunnel
         run: |
-          ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
-          nohup ngrok http --host-header=rewrite development.localhost:8000 &
+          ngrok authtoken ${{ secrets.NGROK_AUTHTOKEN }}
+          nohup ngrok http --host-header=rewrite http://development.localhost:8000 &
+
+      - name: Verify Ngrok Start
+        run: |
+          sleep 15  # Increase sleep time to ensure Ngrok tunnel is fully up
+          ps aux | grep ngrok
 
       - name: Get Ngrok URL
         run: |
-          sleep 10  # Increase sleep time to ensure Ngrok tunnel is fully up
+          sleep 20  # Increase sleep time to ensure Ngrok tunnel is fully up
           curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url > ngrok_url.txt
           if [ ! -s ngrok_url.txt ]; then
             echo "Ngrok URL file is empty. Exiting with error."
