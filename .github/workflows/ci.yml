@@ -114,71 +114,38 @@ jobs:
 
       - name: Verify Bench Start
         run: |
+          sleep 30  # Increase sleep time to ensure Frappe is fully started
           ps aux | grep 'bench serve'
+          curl -v http://development.localhost:8000
 
-      - name: Increase Sleep Time
-        run: sleep 10  # Increase sleep time to 10 seconds
+      - name: Setup Ngrok SSH
+        uses: tmshkr/ngrok-ssh@latest
+        with:
+          NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+          WAIT_FOR_CONNECTION: true
 
-      - name: Download and Install Latest Ngrok
-        run: |
-          curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
-          echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
-          sudo apt update
-          sudo apt install ngrok
-
-      - name: Update site_config.json with Ngrok Authtoken
-        run: |
-          jq '.ngrok_authtoken = "2kGkA70rG3XObU0GY6qdq3qKg0J_eQMRJ5ddkexxZAhydTMB"' /home/runner/frappe-bench/sites/development.localhost/site_config.json > /home/runner/frappe-bench/sites/development.localhost/site_config_tmp.json
-          mv /home/runner/frappe-bench/sites/development.localhost/site_config_tmp.json /home/runner/frappe-bench/sites/development.localhost/site_config.json
-
-      - name: Start Ngrok Tunnel
-        working-directory: /home/runner/frappe-bench
-        run: |
-          nohup bench --site development.localhost ngrok --bind-tls &
-
-      - name: Get Ngrok URLs
-        run: |
-          sleep 10  # Increase sleep time to ensure Ngrok tunnel is fully up
-          curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[] | select(.proto=="https") | .public_url' > ngrok_https_url.txt
-          curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[] | select(.proto=="http") | .public_url' > ngrok_http_url.txt
-          if [ ! -s ngrok_https_url.txt ] || [ ! -s ngrok_http_url.txt ]; then
-            echo "Ngrok URLs file is empty. Exiting with error."
-            exit 1
-          fi
-        id: ngrok-urls
-
-      - name: Display Ngrok URLs
-        run: |
-          echo "HTTPS URL:"
-          cat ngrok_https_url.txt
-          echo "HTTP URL:"
-          cat ngrok_http_url.txt
-
-      - name: Upload Ngrok URLs Artifact
+      - name: Upload Ngrok SSH URL Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ngrok-urls
-          path: |
-            ngrok_https_url.txt
-            ngrok_http_url.txt
+          name: ngrok-ssh-url
+          path: ngrok_url.txt
 
-      - name: Comment on PR with Ngrok URLs
+      - name: Comment on PR with Ngrok SSH URL
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            const https_url = fs.readFileSync('ngrok_https_url.txt', 'utf8').trim();
-            const http_url = fs.readFileSync('ngrok_http_url.txt', 'utf8').trim();
-            if (!https_url || !http_url) {
-              throw new Error('Ngrok URLs are empty');
+            const url = fs.readFileSync('ngrok_url.txt', 'utf8').trim();
+            if (!url) {
+              throw new Error('Ngrok URL is empty');
             }
             github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `The Frappe site for this PR is available at: \n- HTTPS URL: ${https_url}\n- HTTP URL: ${http_url}`
+              body: `You can SSH into the runner using the following Ngrok URL: ${url}`
             });
 
       - name: Test Frappe App
