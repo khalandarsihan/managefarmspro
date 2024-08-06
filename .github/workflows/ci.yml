@@ -168,7 +168,8 @@ jobs:
               body: `The Frappe site for this PR is available at: ${url}`
             });
 
-      - name: Test Frappe App
+      - name: Keep Container Running
         run: |
-          curl -v http://development.localhost:8000
+          echo "Keeping the container running..."
+          while true; do sleep 1000; done
 
