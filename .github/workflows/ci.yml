@@ -96,19 +96,19 @@ jobs:
 
       - name: Cleanup previous Bench instance
         run: |
-          if [ -d ~/frappe-bench ]; then
-            sudo rm -rf ~/frappe-bench
+          if [ -d /home/sihan/frappe-bench ]; then
+            sudo rm -rf /home/sihan/frappe-bench
           fi
 
       - name: Setup Frappe Bench
         run: |
           pip install frappe-bench
-          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" ~/frappe-bench
+          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" /home/sihan/frappe-bench
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 
       - name: Install Frappe App
-        working-directory: ~/frappe-bench
+        working-directory: /home/sihan/frappe-bench
         run: |
           bench get-app managefarmspro $GITHUB_WORKSPACE
           bench setup requirements --dev
@@ -119,7 +119,7 @@ jobs:
           CI: 'Yes'
 
       - name: Start Frappe App
-        working-directory: ~/frappe-bench
+        working-directory: /home/sihan/frappe-bench
         run: |
           echo "web: bench serve --port 8000" > Procfile
           nohup bench start &
