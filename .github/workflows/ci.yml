@@ -94,6 +94,12 @@ jobs:
           sudo apt update
           sudo apt-get install -y mariadb-client-10.6
 
+      - name: Cleanup previous Bench instance
+        run: |
+          if [ -d ~/frappe-bench ]; then
+            sudo rm -rf ~/frappe-bench
+          fi
+
       - name: Setup Frappe Bench
         run: |
           pip install frappe-bench
@@ -102,7 +108,7 @@ jobs:
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 
       - name: Install Frappe App
-        working-directory: /home/runner/frappe-bench
+        working-directory: ~/frappe-bench
         run: |
           bench get-app managefarmspro $GITHUB_WORKSPACE
           bench setup requirements --dev
@@ -113,7 +119,7 @@ jobs:
           CI: 'Yes'
 
       - name: Start Frappe App
-        working-directory: /home/runner/frappe-bench
+        working-directory: ~/frappe-bench
         run: |
           echo "web: bench serve --port 8000" > Procfile
           nohup bench start &
