@@ -112,12 +112,14 @@ jobs:
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 
-      - name: Install Frappe App
+      - name: Install ERPNext and Custom App
         working-directory: /home/sihan/frappe-bench
         run: |
+          bench get-app erpnext --branch version-15
           bench get-app managefarmspro $GITHUB_WORKSPACE
           bench setup requirements --dev
           bench new-site --db-root-password root --admin-password admin development.localhost
+          bench --site development.localhost install-app erpnext
           bench --site development.localhost install-app managefarmspro
           bench build
         env:
@@ -161,12 +163,6 @@ jobs:
       - name: Display Ngrok URL
         run: cat ngrok_url.txt
 
-      - name: Upload Ngrok URL Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: ngrok-url
-          path: ngrok_url.txt
-
       - name: Comment on PR with Ngrok URL
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v4
@@ -183,9 +179,16 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: `The Frappe site for this PR is available at: ${url}`
-            });
+            })
 
-      - name: Test Frappe App
+      - name: Wait for merge or new job
         run: |
-          curl -v http://development.localhost:8000
+          while true; do
+            sleep 60
+            # Check if the workflow run is still active
+            if curl -s "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}" | grep -q '"conclusion": "completed"'; then
+              echo "Workflow run has completed. Exiting."
+              exit 0
+            fi
+          done
 
