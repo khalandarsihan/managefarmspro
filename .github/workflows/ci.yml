@@ -94,6 +94,11 @@ jobs:
           sudo apt update
           sudo apt-get install -y mariadb-client-10.6
 
+      - name: Install jq
+        run: |
+          sudo apt update
+          sudo apt install -y jq
+
       - name: Cleanup previous Bench instance
         run: |
           if [ -d /home/sihan/frappe-bench ]; then
