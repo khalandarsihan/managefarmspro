@@ -129,12 +129,13 @@ jobs:
       - name: Start Ngrok Tunnel
         run: |
           ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
-          nohup ngrok http --host-header=rewrite http://development.localhost:8000 &
+          nohup ngrok http --host-header=rewrite http://development.localhost:8000 --log=stdout --log-level=debug > ngrok.log &
 
       - name: Verify Ngrok Start
         run: |
           sleep 15  # Increase sleep time to ensure Ngrok tunnel is fully up
           ps aux | grep ngrok
+          cat ngrok.log  # Check the Ngrok log
 
       - name: Get Ngrok URL
         run: |
