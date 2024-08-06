@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
     name: Server
@@ -168,8 +168,7 @@ jobs:
               body: `The Frappe site for this PR is available at: ${url}`
             });
 
-      - name: Keep Container Running
+      - name: Test Frappe App
         run: |
-          echo "Keeping the container running..."
-          while true; do sleep 1000; done
+          curl -v http://development.localhost:8000
 
