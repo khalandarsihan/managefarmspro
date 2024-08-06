@@ -114,23 +114,43 @@ jobs:
 
       - name: Verify Bench Start
         run: |
-          sleep 30  # Increase sleep time to ensure Frappe is fully started
           ps aux | grep 'bench serve'
-          curl -v http://development.localhost:8000
 
-      - name: Setup Ngrok SSH
-        uses: tmshkr/ngrok-ssh@latest
-        with:
-          NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-          WAIT_FOR_CONNECTION: true
+      - name: Increase Sleep Time
+        run: sleep 10  # Increase sleep time to 10 seconds
 
-      - name: Upload Ngrok SSH URL Artifact
+      - name: Download and Install Latest Ngrok
+        run: |
+          curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+          echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
+          sudo apt update
+          sudo apt install ngrok
+
+      - name: Start Ngrok Tunnel
+        run: |
+          ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
+          nohup ngrok http --host-header=rewrite development.localhost:8000 &
+
+      - name: Get Ngrok URL
+        run: |
+          sleep 10  # Increase sleep time to ensure Ngrok tunnel is fully up
+          curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url > ngrok_url.txt
+          if [ ! -s ngrok_url.txt ]; then
+            echo "Ngrok URL file is empty. Exiting with error."
+            exit 1
+          fi
+        id: ngrok-url
+
+      - name: Display Ngrok URL
+        run: cat ngrok_url.txt
+
+      - name: Upload Ngrok URL Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ngrok-ssh-url
+          name: ngrok-url
           path: ngrok_url.txt
 
-      - name: Comment on PR with Ngrok SSH URL
+      - name: Comment on PR with Ngrok URL
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v4
         with:
@@ -145,7 +165,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `You can SSH into the runner using the following Ngrok URL: ${url}`
+              body: `The Frappe site for this PR is available at: ${url}`
             });
 
       - name: Test Frappe App
