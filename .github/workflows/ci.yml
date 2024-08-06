@@ -63,7 +63,7 @@ jobs:
           check-latest: true
 
       - name: Cache pip
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements.txt', '**/pyproject.toml', '**/setup.py', '**/setup.cfg') }}
@@ -133,7 +133,7 @@ jobs:
 
       - name: Get Ngrok URL
         run: |
-          sleep 11  # Increase sleep time to ensure Ngrok tunnel is fully up
+          sleep 10  # Increase sleep time to ensure Ngrok tunnel is fully up
           curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url > ngrok_url.txt
           if [ ! -s ngrok_url.txt ]; then
             echo "Ngrok URL file is empty. Exiting with error."
