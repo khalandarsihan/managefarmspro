@@ -126,10 +126,14 @@ jobs:
           sudo apt update
           sudo apt install ngrok
 
+      - name: Update site_config.json with Ngrok Authtoken
+        run: |
+          jq '.ngrok_authtoken = "2kGkA70rG3XObU0GY6qdq3qKg0J_eQMRJ5ddkexxZAhydTMB"' /home/runner/frappe-bench/sites/development.localhost/site_config.json > /home/runner/frappe-bench/sites/development.localhost/site_config_tmp.json
+          mv /home/runner/frappe-bench/sites/development.localhost/site_config_tmp.json /home/runner/frappe-bench/sites/development.localhost/site_config.json
+
       - name: Start Ngrok Tunnel
         working-directory: /home/runner/frappe-bench
         run: |
-          ngrok authtoken 2kGkA70rG3XObU0GY6qdq3qKg0J_eQMRJ5ddkexxZAhydTMB
           nohup bench --site development.localhost ngrok --bind-tls &
 
       - name: Get Ngrok URL
