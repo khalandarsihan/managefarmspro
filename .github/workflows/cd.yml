@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - staging
+  workflow_dispatch: # This allows manual triggering from the GitHub UI
 
 jobs:
   deploy:
@@ -32,9 +33,9 @@ jobs:
               bench --site frontend migrate &&
               exit
             "
-            docker stop frappe_docker-frontend-1 frappe_docker-redis-queue-1 frappe_docker-redis-cache-1 frappe_docker-queue-short-1 frappe_docker-db-1 frappe_docker-scheduler-1 frappe_docker-queue-long-1 frappe_docker-websocket-1 frappe_docker-backend-1
+            docker stop frappe_docker-frontend-1 frappe_docker-redis-queue-1 frappe_docker-redis-cache-1 docker-queue-short-1 frappe_docker-db-1 docker-scheduler-1 docker-queue-long-1 frappe_docker-websocket-1 frappe_docker-backend-1
             sleep 60
-            docker start frappe_docker-frontend-1 frappe_docker-redis-queue-1 frappe_docker-redis-cache-1 frappe_docker-queue-short-1 frappe_docker-db-1 frappe_docker-scheduler-1 frappe_docker-queue-long-1 frappe_docker-websocket-1 frappe_docker-backend-1
+            docker start frappe_docker-frontend-1 frappe_docker-redis-queue-1 frappe_docker-redis-cache-1 docker-queue-short-1 frappe_docker-db-1 docker-scheduler-1 docker-queue-long-1 frappe_docker-websocket-1 frappe_docker-backend-1
             sleep 60
 
       - name: Check deployment status
