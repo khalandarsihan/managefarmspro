@@ -195,31 +195,12 @@ jobs:
         run: |
           url=$(cat ngrok_url.txt)
           echo "Sending email with URL: $url"
-          curl --request POST \
-            --url https://api.sendgrid.com/v3/mail/send \
-            --header "Authorization: Bearer ${{ secrets.SENDGRID_API_KEY }}" \
-            --header "Content-Type: application/json" \
-            --data '{
-              "personalizations": [
-                {
-                  "to": [
-                    {
-                      "email": "khasihan@gmail.com"
-                    }
-                  ],
-                  "subject": "Ngrok URL for Frappe Site"
-                }
-              ],
-              "from": {
-                "email": "'"${{ secrets.EMAIL_USERNAME }}"'"
-              },
-              "content": [
-                {
-                  "type": "text/plain",
-                  "value": "The Frappe site for this PR is available at: '"${url}"'"
-                }
-              ]
-            }'
+          curl --url "smtps://smtp.gmail.com:587" \
+            --ssl-reqd \
+            --mail-from "${{ secrets.SMTP_USERNAME }}" \
+            --mail-rcpt "khasihan@gmail.com" \
+            --user "${{ secrets.SMTP_USERNAME }}:${{ secrets.SMTP_PASSWORD }}" \
+            -T <(echo -e "From: ${{ secrets.SMTP_USERNAME }}\nTo: khasihan@gmail.com\nSubject: Ngrok URL for Frappe Site\n\nThe Frappe site for this PR is available at: $url")
 
       - name: Pause Runner
         run: |
