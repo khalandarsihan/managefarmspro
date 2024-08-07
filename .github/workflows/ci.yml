@@ -161,6 +161,7 @@ jobs:
           nohup ngrok http --host-header=rewrite development.localhost:8000 &
 
       - name: Get Ngrok URL
+        id: ngrok-url
         run: |
           sleep 10  # Increase sleep time to ensure Ngrok tunnel is fully up
           curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url > ngrok_url.txt
@@ -168,7 +169,8 @@ jobs:
             echo "Ngrok URL file is empty. Exiting with error."
             exit 1
           fi
-        id: ngrok-url
+        outputs:
+          public_url: ${{ steps.ngrok-url.outputs.public_url }}
 
       - name: Display Ngrok URL
         run: cat ngrok_url.txt
@@ -191,7 +193,7 @@ jobs:
           while true; do
             sleep 60
           done
-          if [ -f .done]; then
+          if [ -f .done ]; then
             echo "Runner completed due to: $(cat .done)"
           fi
 
