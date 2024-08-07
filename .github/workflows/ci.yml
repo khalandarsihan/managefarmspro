@@ -6,6 +6,9 @@ on:
       - main
       - develop
   pull_request:
+    branches:
+      - main
+      - develop
 
 permissions:
   contents: read
@@ -194,7 +197,7 @@ jobs:
 
   complete:
     runs-on: self-hosted
-    if: github.event_name == 'workflow_run'
+    if: ${{ github.event_name == 'workflow_run' }}
     steps:
       - name: Complete Runner
         run: |
@@ -204,7 +207,7 @@ jobs:
   handle_completion:
     runs-on: self-hosted
     needs: [tests]
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' || github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    if: ${{ (github.event_name == 'pull_request' && github.event.action == 'closed') || (github.event_name == 'push' && github.ref == 'refs/heads/develop') }}
     steps:
       - name: Complete Runner
         run: |
