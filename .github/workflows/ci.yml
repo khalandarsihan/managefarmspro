@@ -170,23 +170,17 @@ jobs:
       - name: Display Ngrok URL
         run: cat ngrok_url.txt
 
-      - name: Comment on PR with Ngrok URL
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v4
+      - name: Send Email Notification with Ngrok URL
+        uses: dawidd6/action-send-mail@v3
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const url = fs.readFileSync('ngrok_url.txt', 'utf8').trim();
-            if (!url) {
-              throw new Error('Ngrok URL is empty');
-            }
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `The Frappe site for this PR is available at: ${url}`
-            });
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: Ngrok URL for Frappe Site
+          body: The Frappe site for this PR is available at: ${{ steps.ngrok-url.outputs.result }}
+          to: khasihan@gmail.com
+          from: ${{ secrets.EMAIL_USERNAME }}
 
       - name: Pause Runner
         run: |
