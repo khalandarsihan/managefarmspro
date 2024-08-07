@@ -105,9 +105,6 @@ jobs:
           if [ -d /home/sihan/frappe-bench ]; then
             sudo rm -rf /home/sihan/frappe-bench
           fi
-          if [ -d /home/sihan/frappe-bench/apps/frappe ]; then
-            sudo rm -rf /home/sihan/frappe-bench/apps/frappe
-          fi
           if [ -d /home/sihan/frappe-bench/apps/erpnext ]; then
             sudo rm -rf /home/sihan/frappe-bench/apps/erpnext
           fi
@@ -122,15 +119,13 @@ jobs:
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 
-      - name: Install Frappe and ERPNext Apps
+      - name: Install ERPNext and Custom App
         working-directory: /home/sihan/frappe-bench
         run: |
-          bench get-app frappe --branch version-15
           bench get-app erpnext --branch version-15
           bench get-app managefarmspro $GITHUB_WORKSPACE
           bench setup requirements --dev
           bench new-site --db-root-password root --admin-password admin development.localhost
-          bench --site development.localhost install-app frappe
           bench --site development.localhost install-app erpnext
           bench --site development.localhost install-app managefarmspro
           bench build
