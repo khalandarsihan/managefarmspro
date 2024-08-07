@@ -162,7 +162,7 @@ jobs:
 
       - name: Get Ngrok URL
         run: |
-          sleep 9  # Increase sleep time to ensure Ngrok tunnel is fully up
+          sleep 10  # Increase sleep time to ensure Ngrok tunnel is fully up
           curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url > ngrok_url.txt
           if [ ! -s ngrok_url.txt ]; then
             echo "Ngrok URL file is empty. Exiting with error."
@@ -197,7 +197,7 @@ jobs:
           echo "Sending email with URL: $url"
           curl --request POST \
             --url https://api.sendgrid.com/v3/mail/send \
-            --header "Authorization: Bearer ${SECRETS.SENDGRID_API_KEY}" \
+            --header "Authorization: Bearer ${{ secrets.SENDGRID_API_KEY }}" \
             --header "Content-Type: application/json" \
             --data '{
               "personalizations": [
@@ -211,7 +211,7 @@ jobs:
                 }
               ],
               "from": {
-                "email": "${{ secrets.EMAIL_USERNAME }}"
+                "email": "'"${{ secrets.EMAIL_USERNAME }}"'"
               },
               "content": [
                 {
