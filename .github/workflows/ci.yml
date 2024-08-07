@@ -161,7 +161,6 @@ jobs:
           nohup ngrok http --host-header=rewrite development.localhost:8000 &
 
       - name: Get Ngrok URL
-        id: ngrok-url
         run: |
           sleep 10  # Increase sleep time to ensure Ngrok tunnel is fully up
           curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url > ngrok_url.txt
@@ -169,23 +168,58 @@ jobs:
             echo "Ngrok URL file is empty. Exiting with error."
             exit 1
           fi
-        outputs:
-          public_url: ${{ steps.ngrok-url.outputs.public_url }}
+        id: ngrok-url
 
       - name: Display Ngrok URL
         run: cat ngrok_url.txt
 
-      - name: Send Email Notification with Ngrok URL
-        uses: dawidd6/action-send-mail@v3
+      - name: Comment on PR with Ngrok URL
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v4
         with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          username: ${{ secrets.EMAIL_USERNAME }}
-          password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: Ngrok URL for Frappe Site
-          body: The Frappe site for this PR is available at: ${{ steps.ngrok-url.outputs.public_url }}
-          to: khasihan@gmail.com
-          from: ${{ secrets.EMAIL_USERNAME }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const url = fs.readFileSync('ngrok_url.txt', 'utf8').trim();
+            if (!url) {
+              throw new Error('Ngrok URL is empty');
+            }
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `The Frappe site for this PR is available at: ${url}`
+            });
+
+      - name: Send Email Notification with Ngrok URL
+        run: |
+          url=$(cat ngrok_url.txt)
+          echo "Sending email with URL: $url"
+          curl --request POST \
+            --url https://api.sendgrid.com/v3/mail/send \
+            --header "Authorization: Bearer ${SECRETS.SENDGRID_API_KEY}" \
+            --header "Content-Type: application/json" \
+            --data '{
+              "personalizations": [
+                {
+                  "to": [
+                    {
+                      "email": "khasihan@gmail.com"
+                    }
+                  ],
+                  "subject": "Ngrok URL for Frappe Site"
+                }
+              ],
+              "from": {
+                "email": "${{ secrets.EMAIL_USERNAME }}"
+              },
+              "content": [
+                {
+                  "type": "text/plain",
+                  "value": "The Frappe site for this PR is available at: '"${url}"'"
+                }
+              ]
+            }'
 
       - name: Pause Runner
         run: |
