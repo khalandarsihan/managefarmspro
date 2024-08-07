@@ -195,7 +195,7 @@ jobs:
         run: |
           url=$(cat ngrok_url.txt)
           echo "Sending email with URL: $url"
-          curl --url "smtps://smtp.gmail.com:587" \
+          curl --url "smtps://smtp.gmail.com:465" \
             --ssl-reqd \
             --mail-from "${{ secrets.SMTP_USERNAME }}" \
             --mail-rcpt "khasihan@gmail.com" \
