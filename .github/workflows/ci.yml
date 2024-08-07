@@ -162,7 +162,7 @@ jobs:
 
       - name: Get Ngrok URL
         run: |
-          sleep 10  # Increase sleep time to ensure Ngrok tunnel is fully up
+          sleep 11  # Increase sleep time to ensure Ngrok tunnel is fully up
           curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url > ngrok_url.txt
           if [ ! -s ngrok_url.txt ]; then
             echo "Ngrok URL file is empty. Exiting with error."
