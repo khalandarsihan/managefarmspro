@@ -122,7 +122,7 @@ jobs:
       - name: Install ERPNext and Custom App
         working-directory: /home/sihan/frappe-bench
         run: |
-          bench get-app erpnext --branch version-15
+          bench get-app --branch version-15 --resolve-deps erpnext
           bench get-app managefarmspro $GITHUB_WORKSPACE
           bench setup requirements --dev
           bench new-site --db-root-password root --admin-password admin development.localhost
