@@ -105,6 +105,15 @@ jobs:
           if [ -d /home/sihan/frappe-bench ]; then
             sudo rm -rf /home/sihan/frappe-bench
           fi
+          if [ -d /home/sihan/frappe-bench/apps/frappe ]; then
+            sudo rm -rf /home/sihan/frappe-bench/apps/frappe
+          fi
+          if [ -d /home/sihan/frappe-bench/apps/erpnext ]; then
+            sudo rm -rf /home/sihan/frappe-bench/apps/erpnext
+          fi
+          if [ -d /home/sihan/frappe-bench/apps/managefarmspro ]; then
+            sudo rm -rf /home/sihan/frappe-bench/apps/managefarmspro
+          fi
 
       - name: Setup Frappe Bench
         run: |
@@ -216,5 +225,4 @@ jobs:
         run: |
           echo "Workflow completed due to: ${{ github.event.action }}" > .done
           pkill -f "while true; do sleep 60; done"
-
 
