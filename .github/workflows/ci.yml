@@ -191,6 +191,20 @@ jobs:
               body: `The Frappe site for this PR is available at: ${url}`
             });
 
+      - name: Install ssmtp
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ssmtp
+
+      - name: Configure ssmtp
+        run: |
+          echo "root=${{ secrets.SMTP_USERNAME }}" | sudo tee /etc/ssmtp/ssmtp.conf
+          echo "mailhub=smtp.gmail.com:587" | sudo tee -a /etc/ssmtp/ssmtp.conf
+          echo "AuthUser=${{ secrets.SMTP_USERNAME }}" | sudo tee -a /etc/ssmtp/ssmtp.conf
+          echo "AuthPass=${{ secrets.SMTP_PASSWORD }}" | sudo tee -a /etc/ssmtp/ssmtp.conf
+          echo "UseTLS=YES" | sudo tee -a /etc/ssmtp/ssmtp.conf
+          echo "UseSTARTTLS=YES" | sudo tee -a /etc/ssmtp/ssmtp.conf
+
       - name: Send Email Notification with Ngrok URL
         run: |
           url=$(cat ngrok_url.txt)
