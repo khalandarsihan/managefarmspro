@@ -188,10 +188,6 @@ jobs:
               body: `The Frappe site for this PR is available at: ${url}`
             });
 
-  wait:
-    runs-on: self-hosted
-    needs: [tests]
-    steps:
       - name: Pause Runner
         run: |
           echo "Pausing the runner..."
