@@ -195,12 +195,7 @@ jobs:
         run: |
           url=$(cat ngrok_url.txt)
           echo "Sending email with URL: $url"
-          curl --url "smtps://smtp.gmail.com:465" \
-            --ssl-reqd \
-            --mail-from "${{ secrets.SMTP_USERNAME }}" \
-            --mail-rcpt "khasihan@gmail.com" \
-            --user "${{ secrets.SMTP_USERNAME }}:${{ secrets.SMTP_PASSWORD }}" \
-            -T <(echo -e "From: ${{ secrets.SMTP_USERNAME }}\nTo: khasihan@gmail.com\nSubject: Ngrok URL for Frappe Site\n\nThe Frappe site for this PR is available at: $url")
+          echo -e "To: khasihan@gmail.com\nFrom: ${{ secrets.SMTP_USERNAME }}\nSubject: Ngrok URL for Frappe Site\n\nThe Frappe site for this PR is available at: $url" | ssmtp khasihan@gmail.com
 
       - name: Pause Runner
         run: |
@@ -208,7 +203,7 @@ jobs:
           while true; do
             sleep 60
           done
-          if [ -f .done ]; then
+          if [ -f .done]; then
             echo "Runner completed due to: $(cat .done)"
           fi
 
