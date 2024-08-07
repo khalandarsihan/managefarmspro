@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - develop
   pull_request:
 
 permissions:
@@ -112,12 +113,16 @@ jobs:
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 
-      - name: Install Frappe App
+      - name: Install Frappe and ERPNext Apps
         working-directory: /home/sihan/frappe-bench
         run: |
+          bench get-app frappe --branch version-15
+          bench get-app erpnext --branch version-15
           bench get-app managefarmspro $GITHUB_WORKSPACE
           bench setup requirements --dev
           bench new-site --db-root-password root --admin-password admin development.localhost
+          bench --site development.localhost install-app frappe
+          bench --site development.localhost install-app erpnext
           bench --site development.localhost install-app managefarmspro
           bench build
         env:
@@ -161,12 +166,6 @@ jobs:
       - name: Display Ngrok URL
         run: cat ngrok_url.txt
 
-      - name: Upload Ngrok URL Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: ngrok-url
-          path: ngrok_url.txt
-
       - name: Comment on PR with Ngrok URL
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v4
@@ -185,7 +184,37 @@ jobs:
               body: `The Frappe site for this PR is available at: ${url}`
             });
 
-      - name: Test Frappe App
+  wait:
+    runs-on: self-hosted
+    needs: [tests]
+    steps:
+      - name: Pause Runner
         run: |
-          curl -v http://development.localhost:8000
+          echo "Pausing the runner..."
+          while true; do
+            sleep 60
+          done
+          if [ -f .done ]; then
+            echo "Runner completed due to: $(cat .done)"
+          fi
+
+  complete:
+    runs-on: self-hosted
+    if: github.event_name == 'workflow_run'
+    steps:
+      - name: Complete Runner
+        run: |
+          echo "${{ github.event.action }}" > .done
+          pkill -f "while true; do sleep 60; done"
+
+  handle_completion:
+    runs-on: self-hosted
+    needs: [tests]
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' || github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    steps:
+      - name: Complete Runner
+        run: |
+          echo "Workflow completed due to: ${{ github.event.action }}" > .done
+          pkill -f "while true; do sleep 60; done"
+
 
