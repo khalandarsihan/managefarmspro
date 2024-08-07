@@ -64,7 +64,7 @@ jobs:
         run: |
           curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
           echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-          sudo apt update && sudo apt install -y yarn
+          sudo apt-get update && sudo apt-get install -y yarn
 
       - name: Cache pip
         uses: actions/cache@v3
@@ -89,13 +89,13 @@ jobs:
 
       - name: Install MariaDB Client
         run: |
-          sudo apt update
+          sudo apt-get update
           sudo apt-get install -y mariadb-client-10.6
 
       - name: Install jq
         run: |
-          sudo apt update
-          sudo apt install -y jq
+          sudo apt-get update
+          sudo apt-get install -y jq
 
       - name: Cleanup previous Bench instance
         run: |
@@ -146,8 +146,8 @@ jobs:
         run: |
           curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
           echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
-          sudo apt update
-          sudo apt install ngrok
+          sudo apt-get update
+          sudo apt-get install ngrok
 
       - name: Start Ngrok Tunnel
         run: |
@@ -211,7 +211,7 @@ jobs:
           while true; do
             sleep 60
           done
-          if [ -f .done]; then
+          if [ -f .done ]; then
             echo "Runner completed due to: $(cat .done)"
           fi
 
