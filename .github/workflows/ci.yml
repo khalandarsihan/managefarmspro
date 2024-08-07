@@ -146,7 +146,7 @@ jobs:
           ps aux | grep 'bench serve'
 
       - name: Increase Sleep Time
-        run: sleep 11  # Increase sleep time to 10 seconds
+        run: sleep 10  # Increase sleep time to 10 seconds
 
       - name: Download and Install Latest Ngrok
         run: |
@@ -181,7 +181,7 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: Ngrok URL for Frappe Site
-          body: The Frappe site for this PR is available at: ${{ steps.ngrok-url.outputs.result }}
+          body: The Frappe site for this PR is available at: ${{ steps.ngrok-url.outputs.public_url }}
           to: khasihan@gmail.com
           from: ${{ secrets.EMAIL_USERNAME }}
 
@@ -191,25 +191,26 @@ jobs:
           while true; do
             sleep 60
           done
-          if [ -f .done ]; then
+          if [ -f .done]; then
             echo "Runner completed due to: $(cat .done)"
           fi
 
-complete:
-  runs-on: self-hosted
-  if: ${{ github.event_name == 'workflow_run' }}
-  steps:
-    - name: Complete Runner
-      run: |
-        echo "${{ github.event.action }}" > .done
-        pkill -f "while true; do sleep 60; done"
+  complete:
+    runs-on: self-hosted
+    if: ${{ github.event_name == 'workflow_run' }}
+    steps:
+      - name: Complete Runner
+        run: |
+          echo "${{ github.event.action }}" > .done
+          pkill -f "while true; do sleep 60; done"
 
-handle_completion:
-  runs-on: self-hosted
-  needs: [tests]
-  if: ${{ (github.event_name == 'pull_request' && github.event.action == 'closed') || (github.event_name == 'push' && github.ref == 'refs/heads/develop') }}
-  steps:
-    - name: Complete Runner
-      run: |
-        echo "Workflow completed due to: ${{ github.event.action }}" > .done
-        pkill -f "while true; do sleep 60; done"
+  handle_completion:
+    runs-on: self-hosted
+    needs: [tests]
+    if: ${{ (github.event_name == 'pull_request' && github.event.action == 'closed') || (github.event_name == 'push' && github.ref == 'refs/heads/develop') }}
+    steps:
+      - name: Complete Runner
+        run: |
+          echo "Workflow completed due to: ${{ github.event.action }}" > .done
+          pkill -f "while true; do sleep 60; done"
+
