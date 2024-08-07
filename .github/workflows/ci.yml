@@ -54,15 +54,17 @@ jobs:
       - name: Run pre-commit
         run: pre-commit run --all-files
 
-      - name: Setup Node and Yarn
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'yarn'
           check-latest: true
 
       - name: Install Yarn
-        run: npm install -g yarn
+        run: |
+          curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+          echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+          sudo apt-get update && sudo apt-get install -y yarn
 
       - name: Cache pip
         uses: actions/cache@v3
@@ -154,7 +156,7 @@ jobs:
 
       - name: Get Ngrok URL
         run: |
-          sleep 11  # Increase sleep time to ensure Ngrok tunnel is fully up
+          sleep 10  # Increase sleep time to ensure Ngrok tunnel is fully up
           curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url > ngrok_url.txt
           if [ ! -s ngrok_url.txt ]; then
             echo "Ngrok URL file is empty. Exiting with error."
@@ -209,6 +211,9 @@ jobs:
           while true; do
             sleep 60
           done
+          if [ -f .done ]; then
+            echo "Runner completed due to: $(cat .done)"
+          fi
 
       - name: Clean up Docker volumes
         run: docker volume prune -f
