@@ -3,21 +3,15 @@ name: CI
 on:
   push:
     branches:
-      - main
       - develop
   pull_request:
     branches:
-      - main
       - develop
 
 permissions:
   contents: read
   issues: write
   pull-requests: write
-
-concurrency:
-  group: main-managefarmspro-${{ github.event.number }}
-  cancel-in-progress: true
 
 jobs:
   tests:
@@ -220,6 +214,9 @@ jobs:
           if [ -f .done]; then
             echo "Runner completed due to: $(cat .done)"
           fi
+
+      - name: Clean up Docker volumes
+        run: docker volume prune -f
 
   complete:
     runs-on: self-hosted
