@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"type\":\"header\",\"data\":{\"text\":\"ManageFarmsPro\"}}]",
+ "content": "[{\"id\":\"oN-4yVuYON\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">ManageFarmsPro</span>\",\"col\":12}}]",
  "creation": "2024-08-05 10:52:28.263999",
  "custom_blocks": [],
  "docstatus": 0,
@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "ManageFarmsPro",
  "links": [],
- "modified": "2024-08-05 10:53:48.995762",
+ "modified": "2024-08-09 19:57:13.075976",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "ManageFarmsPro",
