@@ -42,7 +42,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.11.9'
 
       - name: Install dependencies
         run: |
@@ -55,8 +55,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 18
-          check-latest: true
+          node-version: '18.20.2'
+          check-latest: false
 
       - name: Install Yarn
         run: |
@@ -118,10 +118,12 @@ jobs:
         working-directory: /home/sihan/frappe-bench
         run: |
           bench get-app erpnext --branch version-15
+          bench get-app payments --branch version-15
           bench get-app managefarmspro $GITHUB_WORKSPACE
           bench setup requirements --dev
           bench new-site --db-root-password root --admin-password admin development.localhost
           bench --site development.localhost install-app erpnext
+          bench --site development.localhost install-app payments
           bench --site development.localhost install-app managefarmspro
           bench build
         env:
@@ -208,10 +210,18 @@ jobs:
           echo "Pausing the runner..."
           while true; do
             sleep 60
+            if [ -f .done ]; then
+              echo "Runner completed due to: $(cat .done)"
+              break
+            fi
+            pr_state=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
+              | jq -r .state)
+            if [ "$pr_state" = "closed" ]; then
+              echo "PR is closed, exiting..."
+              break
+            fi
           done
-          if [ -f .done ]; then
-            echo "Runner completed due to: $(cat .done)"
-          fi
 
       - name: Clean up Docker volumes
         run: docker volume prune -f
@@ -234,4 +244,3 @@ jobs:
         run: |
           echo "Workflow completed due to: ${{ github.event.action }}" > .done
           pkill -f "while true; do sleep 60; done"
-

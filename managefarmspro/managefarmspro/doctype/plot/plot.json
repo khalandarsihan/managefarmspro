@@ -1,7 +1,10 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
+ "autoname": "format: PLT-{###}",
  "creation": "2024-08-09 19:45:40.171836",
+ "default_view": "Dashboard",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -9,7 +12,8 @@
   "name1",
   "area",
   "column_break_vjlb",
-  "location"
+  "location",
+  "units"
  ],
  "fields": [
   {
@@ -42,14 +46,21 @@
    "in_list_view": 1,
    "label": "Location",
    "reqd": 1
+  },
+  {
+   "fieldname": "units",
+   "fieldtype": "Select",
+   "label": "Unit(s)",
+   "options": "Acre\nCent"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-09 19:51:19.761428",
+ "modified": "2024-08-12 09:14:21.648315",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Plot",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
