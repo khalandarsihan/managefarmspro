@@ -1,0 +1,34 @@
+{
+ "based_on": "creation",
+ "chart_name": "plot 3",
+ "chart_type": "Count",
+ "color": "#29CD42",
+ "creation": "2024-08-12 09:17:46.897609",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart",
+ "document_type": "Plot",
+ "filters_json": "[]",
+ "group_by_based_on": "units",
+ "group_by_type": "Count",
+ "idx": 3,
+ "is_public": 1,
+ "is_standard": 1,
+ "last_synced_on": "2024-08-12 09:40:52.993980",
+ "modified": "2024-08-12 10:04:46.670972",
+ "modified_by": "Administrator",
+ "module": "Managefarmspro",
+ "name": "plot 3",
+ "number_of_groups": 0,
+ "owner": "Administrator",
+ "roles": [
+  {
+   "role": "All"
+  }
+ ],
+ "time_interval": "Monthly",
+ "timeseries": 1,
+ "timespan": "Last Year",
+ "type": "Bar",
+ "use_report_chart": 0,
+ "y_axis": []
+}

@@ -1,0 +1,33 @@
+{
+ "chart_name": "second chart",
+ "chart_type": "Group By",
+ "color": "#B4CD29",
+ "creation": "2024-08-12 09:16:39.078207",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart",
+ "document_type": "Plot",
+ "filters_json": "[]",
+ "group_by_based_on": "units",
+ "group_by_type": "Count",
+ "idx": 3,
+ "is_public": 1,
+ "is_standard": 1,
+ "last_synced_on": "2024-08-12 10:40:29.740720",
+ "modified": "2024-08-12 10:40:56.216598",
+ "modified_by": "Administrator",
+ "module": "Managefarmspro",
+ "name": "second chart",
+ "number_of_groups": 0,
+ "owner": "Administrator",
+ "roles": [
+  {
+   "role": "All"
+  }
+ ],
+ "time_interval": "Monthly",
+ "timeseries": 0,
+ "timespan": "Last Year",
+ "type": "Pie",
+ "use_report_chart": 0,
+ "y_axis": []
+}

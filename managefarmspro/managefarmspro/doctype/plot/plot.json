@@ -1,7 +1,10 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
+ "autoname": "format: PLT-{###}",
  "creation": "2024-08-09 19:45:40.171836",
+ "default_view": "Dashboard",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -53,10 +56,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-11 22:24:51.709690",
+ "modified": "2024-08-12 09:14:21.648315",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Plot",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

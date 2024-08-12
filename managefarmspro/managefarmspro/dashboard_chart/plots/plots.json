@@ -1,0 +1,33 @@
+{
+ "chart_name": "Plots",
+ "chart_type": "Group By",
+ "color": "#761ACB",
+ "creation": "2024-08-12 09:15:37.391418",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart",
+ "document_type": "Plot",
+ "filters_json": "[]",
+ "group_by_based_on": "units",
+ "group_by_type": "Count",
+ "idx": 5,
+ "is_public": 1,
+ "is_standard": 1,
+ "last_synced_on": "2024-08-12 09:40:52.910637",
+ "modified": "2024-08-12 10:04:53.797942",
+ "modified_by": "Administrator",
+ "module": "Managefarmspro",
+ "name": "Plots",
+ "number_of_groups": 0,
+ "owner": "Administrator",
+ "roles": [
+  {
+   "role": "All"
+  }
+ ],
+ "time_interval": "Monthly",
+ "timeseries": 0,
+ "timespan": "Last Year",
+ "type": "Donut",
+ "use_report_chart": 0,
+ "y_axis": []
+}
