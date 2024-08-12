@@ -31,28 +31,39 @@ jobs:
 
       - name: Build and Tag Docker Image
         run: |
+          cd /home/sihan/frappe_docker
           docker build \
             --build-arg=FRAPPE_PATH=https://github.com/frappe/frappe \
             --build-arg=FRAPPE_BRANCH=version-15 \
             --build-arg=PYTHON_VERSION=3.11.9 \
             --build-arg=NODE_VERSION=18.20.2 \
             --build-arg=APPS_JSON_BASE64=${{ secrets.APPS_JSON_BASE64 }} \
-            --tag=ghcr.io/${{ github.repository_owner }}/managefarmspro/frappe-app:${{ env.version }} \
-            --file=/home/sihan/frappe_docker/images/custom/Containerfile .
+            --tag=ghcr.io/${{ github.repository_owner }}/repo/custom:${{ env.version }} \
+            --file=images/custom/Containerfile .
 
       - name: Push Docker Image
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/managefarmspro/frappe-app:${{ env.version }}
+          docker push ghcr.io/${{ github.repository_owner }}/repo/custom:${{ env.version }}
 
       - name: Set Deployment Environment Variables
         run: |
-          echo "CUSTOM_IMAGE=ghcr.io/${{ github.repository_owner }}/managefarmspro/frappe-app" >> $GITHUB_ENV
+          echo "CUSTOM_IMAGE=ghcr.io/${{ github.repository_owner }}/repo/custom" >> $GITHUB_ENV
           echo "CUSTOM_TAG=${{ env.version }}" >> $GITHUB_ENV
 
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Clean up Docker on Frappe Server
+        uses: appleboy/ssh-action@v0.1.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker system prune -af
+            docker volume prune -f
 
       - name: SSH and Deploy Frappe App
         uses: appleboy/ssh-action@v0.1.3
@@ -61,8 +72,8 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            sed -i "s|ghcr.io/khalandarsihan/managefarmspro/frappe-app:.*|ghcr.io/khalandarsihan/managefarmspro/frappe-app:${{ env.version }}|g" /home/sihan/staging/frappe_docker/pwd.yml
             cd /home/sihan/staging/frappe_docker
-            sed -i "s|image: .*/frappe-app:.*|image: ghcr.io/${{ github.repository_owner }}/managefarmspro/frappe-app:${{ env.version }}|g" pwd.yml
             docker compose -f pwd.yml down
             docker compose -f pwd.yml pull
             docker compose -f pwd.yml up -d
