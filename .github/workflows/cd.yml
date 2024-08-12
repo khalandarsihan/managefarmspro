@@ -61,28 +61,25 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          export CUSTOM_IMAGE="${{ env.CUSTOM_IMAGE }}"
-          export CUSTOM_TAG="${{ env.CUSTOM_TAG }}"
-          
-          # Debugging: Print the values of CUSTOM_IMAGE and CUSTOM_TAG
-          echo "CUSTOM_IMAGE=${CUSTOM_IMAGE}"
-          echo "CUSTOM_TAG=${CUSTOM_TAG}"
-          
-          sed -i "s|ghcr.io/khalandarsihan/managefarmspro/frappe-app:.*|${CUSTOM_IMAGE}:${CUSTOM_TAG}|g" /home/sihan/staging/frappe_docker/pwd.yml
-          cd /home/sihan/staging/frappe_docker
-          docker compose -f pwd.yml down
-          docker system prune -af    # Docker pruning after docker compose down
-          docker volume prune -f     # Volume pruning after docker compose down
-          docker compose -f pwd.yml pull
-          docker compose -f pwd.yml up -d
-          sleep 300
-          if curl -s -o /dev/null -w "%{http_code}" https://khasihan.xyz | grep 200; then
-            echo "Deployment successful!"
-          else
-            echo "Deployment failed"
-            exit 1
-          fi
+          script: |
+            export CUSTOM_IMAGE="${{ env.CUSTOM_IMAGE }}"
+            export CUSTOM_TAG="${{ env.CUSTOM_TAG }}"
+            echo "CUSTOM_IMAGE=${CUSTOM_IMAGE}"
+            echo "CUSTOM_TAG=${CUSTOM_TAG}"
+            sed -i "s|ghcr.io/khalandarsihan/managefarmspro/frappe-app:.*|${CUSTOM_IMAGE}:${CUSTOM_TAG}|g" /home/sihan/staging/frappe_docker/pwd.yml
+            cd /home/sihan/staging/frappe_docker
+            docker compose -f pwd.yml down
+            docker system prune -af    # Docker pruning after docker compose down
+            docker volume prune -f     # Volume pruning after docker compose down
+            docker compose -f pwd.yml pull
+            docker compose -f pwd.yml up -d
+            sleep 300
+            if curl -s -o /dev/null -w "%{http_code}" https://khasihan.xyz | grep 200; then
+              echo "Deployment successful!"
+            else
+              echo "Deployment failed"
+              exit 1
+            fi
 
       - name: Clean up Docker components on Runner
         run: |
