@@ -32,7 +32,7 @@ jobs:
       - name: Build and Tag Docker Image
         run: |
           cd /home/sihan/frappe_docker
-          docker build \
+          docker build --pull \
             --build-arg=FRAPPE_PATH=https://github.com/frappe/frappe \
             --build-arg=FRAPPE_BRANCH=version-15 \
             --build-arg=PYTHON_VERSION=3.11.9 \
@@ -49,11 +49,6 @@ jobs:
         run: |
           echo "CUSTOM_IMAGE=ghcr.io/khalandarsihan/managefarmspro/frappe-app" >> $GITHUB_ENV
           echo "CUSTOM_TAG=${{ env.version }}" >> $GITHUB_ENV
-
-      - name: Clean up Docker components on Runner
-        run: |
-          docker system prune -af
-          docker volume prune -f
 
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.5.3
@@ -74,7 +69,7 @@ jobs:
             docker compose -f pwd.yml down
             docker system prune -af    # Docker pruning after docker compose down
             docker volume prune -f     # Volume pruning after docker compose down
-            docker compose -f pwd.yml pull
+            docker compose -f pwd.yml pull  # Ensure the latest image is pulled
             docker compose -f pwd.yml up -d
             sleep 300
             if curl -s -o /dev/null -w "%{http_code}" https://khasihan.xyz | grep 200; then
@@ -83,6 +78,11 @@ jobs:
               echo "Deployment failed"
               exit 1
             fi
+
+      - name: Clean up Docker components on Runner
+        run: |
+          docker system prune -af  # Pruning after all deployment steps are done
+          docker volume prune -f
 
       - name: Finish CD
         if: success()
