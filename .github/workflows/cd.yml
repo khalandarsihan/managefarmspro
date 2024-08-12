@@ -19,7 +19,6 @@ jobs:
           version=$(date +"%Y%m%d%H%M%S")
           echo "CUSTOM_IMAGE=ghcr.io/${{ github.repository_owner }}/repo/custom" >> $GITHUB_ENV
           echo "CUSTOM_TAG=$version" >> $GITHUB_ENV
-          echo "version=$version" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -40,12 +39,12 @@ jobs:
             --build-arg=PYTHON_VERSION=3.11.9 \
             --build-arg=NODE_VERSION=18.20.2 \
             --build-arg=APPS_JSON_BASE64=${{ secrets.APPS_JSON_BASE64 }} \
-            --tag=ghcr.io/${{ github.repository_owner }}/repo/custom:${{ env.version }} \
+            --tag=ghcr.io/${{ github.repository_owner }}/repo/custom:${{ env.CUSTOM_TAG }} \
             --file=images/custom/Containerfile .
 
       - name: Push Docker Image
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/repo/custom:${{ env.version }}
+          docker push ghcr.io/${{ github.repository_owner }}/repo/custom:${{ env.CUSTOM_TAG }}
 
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.5.3
