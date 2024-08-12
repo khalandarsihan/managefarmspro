@@ -7,6 +7,7 @@
  "field_order": [
   "clusters_section",
   "cluster_name",
+  "active",
   "column_break_dwtn",
   "cluster_manager"
  ],
@@ -39,11 +40,17 @@
    "in_standard_filter": 1,
    "label": "Cluster Manager",
    "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "active",
+   "fieldtype": "Check",
+   "label": "Active"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-07 21:31:28.807650",
+ "modified": "2024-08-12 20:50:56.544642",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Cluster",
