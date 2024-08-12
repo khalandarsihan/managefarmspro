@@ -53,6 +53,9 @@ jobs:
 
       - name: Clean up Docker on Frappe Server
         uses: appleboy/ssh-action@v0.1.3
+        env:
+          CUSTOM_IMAGE: ${{ env.CUSTOM_IMAGE }}
+          CUSTOM_TAG: ${{ env.CUSTOM_TAG }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
@@ -60,12 +63,12 @@ jobs:
           script: |
             docker system prune -af
             docker volume prune -f
-        env:
-          CUSTOM_IMAGE: ${{ env.CUSTOM_IMAGE }}
-          CUSTOM_TAG: ${{ env.CUSTOM_TAG }}
 
       - name: SSH and Deploy Frappe App
         uses: appleboy/ssh-action@v0.1.3
+        env:
+          CUSTOM_IMAGE: ${{ env.CUSTOM_IMAGE }}
+          CUSTOM_TAG: ${{ env.CUSTOM_TAG }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
@@ -83,9 +86,6 @@ jobs:
               echo "Deployment failed"
               exit 1
             fi
-        env:
-          CUSTOM_IMAGE: ${{ env.CUSTOM_IMAGE }}
-          CUSTOM_TAG: ${{ env.CUSTOM_TAG }}
 
       - name: Finish CD
         if: success()
