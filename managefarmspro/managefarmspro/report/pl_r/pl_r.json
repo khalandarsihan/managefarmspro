@@ -1,0 +1,40 @@
+{
+ "add_total_row": 0,
+ "columns": [
+  {
+   "fieldname": "Name",
+   "fieldtype": "Check",
+   "label": "Name",
+   "width": 0
+  },
+  {
+   "fieldname": "Area",
+   "fieldtype": "Check",
+   "label": "Area",
+   "width": 0
+  }
+ ],
+ "creation": "2024-08-14 12:01:37.825410",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "json": "{}",
+ "letterhead": null,
+ "modified": "2024-08-14 12:01:37.825410",
+ "modified_by": "Administrator",
+ "module": "Managefarmspro",
+ "name": "Pl R",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Plot",
+ "report_name": "Pl R",
+ "report_type": "Report Builder",
+ "roles": [
+  {
+   "role": "System Manager"
+  }
+ ]
+}

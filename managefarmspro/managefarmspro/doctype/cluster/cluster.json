@@ -1,8 +1,10 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "format:CLUSTER-{###}",
  "creation": "2024-08-07 17:44:03.947322",
  "doctype": "DocType",
+ "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "clusters_section",
@@ -25,8 +27,7 @@
    "in_preview": 1,
    "in_standard_filter": 1,
    "label": "Cluster Name",
-   "reqd": 1,
-   "unique": 1
+   "reqd": 1
   },
   {
    "fieldname": "column_break_dwtn",
@@ -50,10 +51,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-12 20:50:56.544642",
+ "modified": "2024-08-14 15:02:37.884662",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Cluster",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
@@ -69,6 +71,8 @@
    "write": 1
   }
  ],
+ "quick_entry": 1,
+ "show_title_field_in_link": 1,
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": [],
