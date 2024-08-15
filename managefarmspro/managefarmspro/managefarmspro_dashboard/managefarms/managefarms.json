@@ -24,6 +24,10 @@
   {
    "chart": "third chart",
    "width": "Half"
+  },
+  {
+   "chart": "Pl-A",
+   "width": "Half"
   }
  ],
  "creation": "2024-08-12 09:45:05.196880",
@@ -33,7 +37,7 @@
  "idx": 0,
  "is_default": 1,
  "is_standard": 1,
- "modified": "2024-08-12 10:45:48.263829",
+ "modified": "2024-08-14 12:17:54.621285",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "managefarms",

@@ -1,0 +1,13 @@
+{
+ "creation": "2024-08-14 11:35:00.332084",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart Source",
+ "idx": 0,
+ "modified": "2024-08-14 11:35:00.332084",
+ "modified_by": "Administrator",
+ "module": "Managefarmspro",
+ "name": "ManageFarms",
+ "owner": "Administrator",
+ "source_name": "ManageFarms",
+ "timeseries": 0
+}
