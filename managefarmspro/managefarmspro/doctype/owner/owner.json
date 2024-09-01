@@ -1,0 +1,194 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "format:OW-{MM}-{YYYY}-{####}",
+ "creation": "2024-08-28 17:54:55.958268",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "owner_tab",
+  "owner_information_section",
+  "first_name",
+  "phone_number",
+  "client_since",
+  "is_active",
+  "column_break_keqc",
+  "last_name",
+  "email",
+  "ownership_type",
+  "column_break_rmuh",
+  "address",
+  "ownership_details_section",
+  "notes_remarks",
+  "document_attachments",
+  "section_break_bidr",
+  "full_name",
+  "partners_tab",
+  "partners_information",
+  "plot_tab",
+  "plot_list",
+  "transactions_tab",
+  "transaction_id"
+ ],
+ "fields": [
+  {
+   "fieldname": "owner_tab",
+   "fieldtype": "Tab Break",
+   "label": "Owner"
+  },
+  {
+   "fieldname": "owner_information_section",
+   "fieldtype": "Section Break",
+   "label": "General Information"
+  },
+  {
+   "fieldname": "partners_tab",
+   "fieldtype": "Tab Break",
+   "label": "Partners"
+  },
+  {
+   "fieldname": "partners_information",
+   "fieldtype": "Table",
+   "label": "Partners Information",
+   "options": "Partner"
+  },
+  {
+   "fieldname": "plot_tab",
+   "fieldtype": "Tab Break",
+   "label": "Plots"
+  },
+  {
+   "fieldname": "plot_list",
+   "fieldtype": "Table",
+   "label": "Plot List",
+   "options": "link plot owner"
+  },
+  {
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "label": "First Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_keqc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_rmuh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_name",
+   "fieldtype": "Data",
+   "label": "Last Name"
+  },
+  {
+   "fieldname": "phone_number",
+   "fieldtype": "Phone",
+   "label": "Phone Number"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Address"
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active ?"
+  },
+  {
+   "fieldname": "transactions_tab",
+   "fieldtype": "Tab Break",
+   "label": "Transactions"
+  },
+  {
+   "fieldname": "transaction_id",
+   "fieldtype": "Data",
+   "label": "Transaction Id"
+  },
+  {
+   "fieldname": "ownership_details_section",
+   "fieldtype": "Section Break",
+   "label": "Additional Information"
+  },
+  {
+   "description": "Documents related to ownership, such as contracts or ID proofs.",
+   "fieldname": "document_attachments",
+   "fieldtype": "Attach",
+   "label": "Document Attachments"
+  },
+  {
+   "fieldname": "ownership_type",
+   "fieldtype": "Select",
+   "label": "Ownership Type",
+   "options": "Individual\nCompany\nPartnership\nOthers"
+  },
+  {
+   "description": "Additional notes or remarks about the owner.",
+   "fieldname": "notes_remarks",
+   "fieldtype": "Small Text",
+   "label": "Notes/Remarks"
+  },
+  {
+   "fieldname": "section_break_bidr",
+   "fieldtype": "Section Break",
+   "label": "Hidden Section"
+  },
+  {
+   "fieldname": "client_since",
+   "fieldtype": "Date",
+   "label": "Clent Since"
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Full Name",
+   "read_only": 1,
+   "unique": 1
+  }
+ ],
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "Plot",
+   "link_fieldname": "owner_name"
+  }
+ ],
+ "modified": "2024-09-01 14:32:36.144073",
+ "modified_by": "Administrator",
+ "module": "Managefarmspro",
+ "name": "Owner",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "full_name",
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "full_name"
+}

@@ -1,0 +1,47 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-08-29 12:55:54.415907",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "plot",
+  "plot_name",
+  "plot_area"
+ ],
+ "fields": [
+  {
+   "fieldname": "plot",
+   "fieldtype": "Link",
+   "label": "Plot",
+   "link_filters": "[[\"Plot\",\"full_name\",\"=\",\"eval: parent.full_name\"]]",
+   "options": "Plot",
+   "unique": 1
+  },
+  {
+   "fetch_from": "plot.plot_name",
+   "fieldname": "plot_name",
+   "fieldtype": "Data",
+   "label": "Plot Name"
+  },
+  {
+   "fetch_from": "plot.area",
+   "fieldname": "plot_area",
+   "fieldtype": "Float",
+   "label": "Plot Area"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-09-01 11:17:32.409222",
+ "modified_by": "Administrator",
+ "module": "Managefarmspro",
+ "name": "link plot owner",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
