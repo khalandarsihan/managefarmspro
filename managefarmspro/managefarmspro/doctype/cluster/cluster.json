@@ -1,61 +1,81 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
- "autoname": "format:CLUSTER-{###}",
- "creation": "2024-08-07 17:44:03.947322",
+ "autoname": "field:cluster_name",
+ "creation": "2024-08-31 13:22:29.349810",
  "doctype": "DocType",
- "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "clusters_section",
+  "cluster_tab",
+  "cluster_details_section",
   "cluster_name",
-  "active",
-  "column_break_dwtn",
-  "cluster_manager"
+  "supervisor",
+  "work_history_tab",
+  "work_history_section",
+  "work_history",
+  "plots_tab",
+  "plots"
  ],
  "fields": [
   {
-   "fieldname": "clusters_section",
+   "fieldname": "cluster_details_section",
    "fieldtype": "Section Break",
-   "label": "Clusters"
+   "label": "Cluster Details"
   },
   {
    "fieldname": "cluster_name",
    "fieldtype": "Data",
-   "in_filter": 1,
    "in_list_view": 1,
-   "in_preview": 1,
-   "in_standard_filter": 1,
    "label": "Cluster Name",
-   "reqd": 1
+   "reqd": 1,
+   "unique": 1
   },
   {
-   "fieldname": "column_break_dwtn",
-   "fieldtype": "Column Break"
+   "fieldname": "work_history_tab",
+   "fieldtype": "Tab Break",
+   "label": "Works"
   },
   {
-   "fieldname": "cluster_manager",
+   "fieldname": "work_history_section",
+   "fieldtype": "Section Break",
+   "label": "Work History"
+  },
+  {
+   "fieldname": "work_history",
+   "fieldtype": "Table",
+   "label": "Work History",
+   "options": "Work History"
+  },
+  {
+   "fieldname": "cluster_tab",
+   "fieldtype": "Tab Break",
+   "label": "Cluster"
+  },
+  {
+   "fieldname": "plots_tab",
+   "fieldtype": "Tab Break",
+   "label": "Plots"
+  },
+  {
+   "fieldname": "plots",
+   "fieldtype": "Table",
+   "label": "Plots",
+   "options": "link plot cluster"
+  },
+  {
+   "fieldname": "supervisor",
    "fieldtype": "Data",
-   "in_list_view": 1,
-   "in_preview": 1,
-   "in_standard_filter": 1,
-   "label": "Cluster Manager",
-   "reqd": 1
-  },
-  {
-   "default": "1",
-   "fieldname": "active",
-   "fieldtype": "Check",
-   "label": "Active"
+   "label": "Supervisor"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-14 15:02:37.884662",
+ "modified": "2024-09-01 12:10:01.710529",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Cluster",
- "naming_rule": "Expression",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
@@ -71,9 +91,9 @@
    "write": 1
   }
  ],
- "quick_entry": 1,
+ "search_fields": "cluster_name",
  "show_title_field_in_link": 1,
- "sort_field": "creation",
+ "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
  "title_field": "cluster_name"
