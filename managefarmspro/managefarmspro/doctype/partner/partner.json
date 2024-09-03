@@ -15,6 +15,7 @@
   {
    "fieldname": "phone_number",
    "fieldtype": "Phone",
+   "in_list_view": 1,
    "label": "Phone Number"
   },
   {
@@ -24,18 +25,20 @@
   {
    "fieldname": "email",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Email"
   },
   {
    "fieldname": "partner_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Partner Name"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-09-01 09:43:48.306973",
+ "modified": "2024-09-03 13:05:01.826876",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Partner",
