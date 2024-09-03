@@ -66,12 +66,13 @@
   {
    "fieldname": "supervisor",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Supervisor"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-01 12:10:01.710529",
+ "modified": "2024-09-03 13:43:42.841020",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Cluster",

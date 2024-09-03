@@ -103,9 +103,11 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "SF1",
    "fieldname": "plot_location",
-   "fieldtype": "Data",
-   "label": "Plot Location"
+   "fieldtype": "Select",
+   "label": "Plot Location",
+   "options": "SF1\nTBD\nNA"
   },
   {
    "fieldname": "section_break_nucz",
@@ -164,7 +166,7 @@
   {
    "fieldname": "inspection_history_section",
    "fieldtype": "Section Break",
-   "label": "inspection History"
+   "label": "Inspection History"
   },
   {
    "fieldname": "last_inspection_date",
@@ -227,7 +229,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-01 10:02:47.060300",
+ "modified": "2024-09-03 14:50:14.552585",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Plot",
