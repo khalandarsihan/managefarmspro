@@ -1,55 +1,89 @@
-# Copyright (c) 2024, FigAi GenAi Solutions and contributors
-# For license information, please see license.txt
-
 import frappe
 from frappe.model.document import Document
 
 
 class Plot(Document):
-	def after_insert(self):
-		# Handle updating the Owner's plot_list
+	def before_save(self):
+		# Capture the old cluster value before it's modified during the update
+		self.previous_cluster_name = frappe.db.get_value("Plot", self.name, "cluster_name", cache=False)
+
+	def on_update(self):
+		# Log update details
+		# frappe.msgprint(f"on_update called for Plot {self.name}")
+		# frappe.msgprint(f"Previous cluster: {self.previous_cluster_name}, New cluster: {self.cluster_name}")
+
+		if self.previous_cluster_name and self.previous_cluster_name != self.cluster_name:
+			self.remove_from_previous_cluster(self.previous_cluster_name)
+
+		self.update_owner_plot_list()
+		self.update_cluster_plots()
+
+	def remove_from_previous_cluster(self, previous_cluster_name):
+		try:
+			# Fetch the previous cluster document
+			previous_cluster_doc = frappe.get_doc("Cluster", previous_cluster_name)
+
+			# Remove the plot from the previous cluster's child table
+			previous_cluster_doc.plots = [
+				plot for plot in previous_cluster_doc.plots if plot.plot != self.name
+			]
+			previous_cluster_doc.save()
+			# frappe.msgprint(f"Plot {self.name} removed from previous cluster {previous_cluster_name}")
+
+		except frappe.DoesNotExistError:
+			frappe.msgprint(f"Error: Previous cluster {previous_cluster_name} does not exist.")
+			frappe.log_error(
+				f"Previous Cluster {previous_cluster_name} not found for Plot {self.name}",
+				"Remove from Old Cluster Error",
+			)
+
+	def update_owner_plot_list(self):
 		owner_name = self.owner_name
 		if owner_name:
 			try:
 				owner_doc = frappe.get_doc("Owner", owner_name)
-
-				# Check if the plot already exists in the plot_list to avoid duplication
 				exists = False
 				for plot in owner_doc.plot_list:
 					if plot.plot == self.name:
+						plot.plot_name = self.plot_name
+						plot.plot_area = self.area
+						plot.plot_cluster = self.cluster
 						exists = True
 						break
 
 				if not exists:
-					# Add the new plot to the plot_list child table in the Owner document
 					owner_doc.append(
-						"plot_list", {"plot": self.name, "plot_name": self.plot_name, "plot_area": self.area}
+						"plot_list",
+						{
+							"plot": self.name,
+							"plot_name": self.plot_name,
+							"plot_area": self.area,
+							"cluster": self.cluster,
+						},
 					)
-
-					# Save the Owner document to apply changes
-					owner_doc.save()
+				owner_doc.save()
 
 			except frappe.DoesNotExistError:
 				frappe.log_error(
-					f"Owner {owner_name} not found while creating Plot {self.name}",
+					f"Owner {owner_name} not found while creating/updating Plot {self.name}",
 					"Populate Plot List Error",
 				)
 
-		# Handle updating the Cluster's plots table
+	def update_cluster_plots(self):
 		cluster_name = self.cluster_name
 		if cluster_name:
 			try:
 				cluster_doc = frappe.get_doc("Cluster", cluster_name)
-
-				# Check if the plot already exists in the plots child table to avoid duplication
 				exists = False
 				for plot in cluster_doc.plots:
 					if plot.plot == self.name:
+						plot.plot_name = self.plot_name
+						plot.plot_area = self.area
+						plot.units = self.units
 						exists = True
 						break
 
 				if not exists:
-					# Add the new plot to the plots child table in the Cluster document
 					cluster_doc.append(
 						"plots",
 						{
@@ -59,15 +93,13 @@ class Plot(Document):
 							"units": self.units,
 						},
 					)
+				# frappe.msgprint(f"Plot {self.name} added to new cluster {cluster_name}")
 
-					# Save the Cluster document to apply changes
-					cluster_doc.save()
+				cluster_doc.save()
 
 			except frappe.DoesNotExistError:
+				frappe.msgprint(f"Error: New cluster {cluster_name} does not exist.")
 				frappe.log_error(
-					f"Cluster {cluster_name} not found while creating Plot {self.name}",
+					f"Cluster {cluster_name} not found while creating/updating Plot {self.name}",
 					"Populate Plots Error",
 				)
-
-		# Commit the transaction to the database
-		frappe.db.commit()

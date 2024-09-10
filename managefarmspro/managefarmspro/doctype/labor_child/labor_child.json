@@ -1,0 +1,69 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-09-09 13:41:12.646025",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "labor_name",
+  "number_of_labor_units",
+  "labor_unit",
+  "unit_price",
+  "total_price"
+ ],
+ "fields": [
+  {
+   "fieldname": "labor_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Labor Name",
+   "link_filters": "[[\"Item\",\"item_group\",\"=\",\"Labor\"]]",
+   "options": "Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "unit_price",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Unit Price",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_price",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total Price",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "number_of_labor_units",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Number of Units",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "labor_unit",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Unit",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-09-09 17:08:32.143643",
+ "modified_by": "Administrator",
+ "module": "Managefarmspro",
+ "name": "Labor Child",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,0 +1,204 @@
+{
+ "_comments": "[{\"comment\": \"Action Failed<br><br>Option <strong>Work Item</strong> for field <strong>work_items</strong> is n...\", \"by\": \"Administrator\", \"name\": \"61iq5qmpri\"}, {\"comment\": \"Action Failed<br><br>Option <strong>Work Item</strong> for field <strong>work_items</strong> is n...\", \"by\": \"Administrator\", \"name\": \"6347erd11t\"}]",
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:WORK-ID-{###}",
+ "creation": "2024-09-05 10:06:36.753484",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "work_information",
+  "plot",
+  "work_type_name",
+  "work_date",
+  "work_photos",
+  "column_break_xtng",
+  "description",
+  "work_details",
+  "labor_required",
+  "equipment_required",
+  "material_required",
+  "column_break_avkx",
+  "number_of_labor_units",
+  "number_of_equipment_units",
+  "number_of_material_units",
+  "column_break_fwhs",
+  "labor_unit",
+  "equipment_unit",
+  "material_unit",
+  "section_break_bjeb",
+  "labor_table",
+  "equipment_table",
+  "material_table",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "work_type_name",
+   "fieldtype": "Link",
+   "label": "Work Name",
+   "options": "Work Item"
+  },
+  {
+   "fieldname": "equipment_required",
+   "fieldtype": "Link",
+   "label": "Equipment Required",
+   "link_filters": "[[\"Item\",\"item_group\",\"=\",\"Equipment\"]]",
+   "options": "Item"
+  },
+  {
+   "fieldname": "section_break_bjeb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_avkx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_fwhs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "material_required",
+   "fieldtype": "Link",
+   "label": "Material Required",
+   "link_filters": "[[\"Item\",\"item_group\",\"=\",\"Raw Material\"]]",
+   "options": "Item"
+  },
+  {
+   "fetch_from": "material_required.stock_uom",
+   "fieldname": "material_unit",
+   "fieldtype": "Data",
+   "label": "Unit"
+  },
+  {
+   "fieldname": "column_break_xtng",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "work_date",
+   "fieldtype": "Date",
+   "label": "Work Date"
+  },
+  {
+   "fieldname": "plot",
+   "fieldtype": "Link",
+   "label": "Plot",
+   "options": "Plot"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Work",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "labor_required",
+   "fieldtype": "Link",
+   "label": "Labor Required",
+   "link_filters": "[[\"Item\",\"item_group\",\"=\",\"Labor\"]]",
+   "options": "Item"
+  },
+  {
+   "fieldname": "number_of_equipment_units",
+   "fieldtype": "Int",
+   "label": "Number of Units",
+   "non_negative": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "number_of_material_units",
+   "fieldtype": "Int",
+   "label": "Number of Units",
+   "non_negative": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "number_of_labor_units",
+   "fieldtype": "Int",
+   "label": "Number of Units",
+   "non_negative": 1
+  },
+  {
+   "fetch_from": "equipment_required.stock_uom",
+   "fieldname": "equipment_unit",
+   "fieldtype": "Data",
+   "label": "Unit",
+   "precision": "2"
+  },
+  {
+   "fieldname": "labor_unit",
+   "fieldtype": "Data",
+   "label": "Unit"
+  },
+  {
+   "fieldname": "work_information",
+   "fieldtype": "Section Break",
+   "label": "Work Information"
+  },
+  {
+   "fieldname": "work_details",
+   "fieldtype": "Section Break",
+   "label": "Work Details"
+  },
+  {
+   "fieldname": "equipment_table",
+   "fieldtype": "Table",
+   "label": "Equipment",
+   "options": "Equipment Child"
+  },
+  {
+   "fieldname": "material_table",
+   "fieldtype": "Table",
+   "label": "Material",
+   "options": "Material Child"
+  },
+  {
+   "fieldname": "labor_table",
+   "fieldtype": "Table",
+   "label": "Labor",
+   "options": "Labor Child"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Work Description"
+  },
+  {
+   "fieldname": "work_photos",
+   "fieldtype": "Attach",
+   "label": "Work Photos"
+  }
+ ],
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-09-10 19:22:56.025606",
+ "modified_by": "Administrator",
+ "module": "Managefarmspro",
+ "name": "Work",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

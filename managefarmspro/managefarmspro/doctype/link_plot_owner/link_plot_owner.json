@@ -9,7 +9,10 @@
   "plot",
   "plot_name",
   "plot_area",
-  "units"
+  "units",
+  "column_break_ggxn",
+  "cluster",
+  "cluster_name"
  ],
  "fields": [
   {
@@ -19,33 +22,57 @@
    "label": "Plot",
    "link_filters": "[[\"Plot\",\"full_name\",\"=\",\"eval: parent.full_name\"]]",
    "options": "Plot",
+   "read_only": 1,
    "unique": 1
   },
   {
    "fetch_from": "plot.plot_name",
    "fieldname": "plot_name",
    "fieldtype": "Data",
-   "label": "Plot Name"
+   "label": "Plot Name",
+   "read_only": 1
   },
   {
    "fetch_from": "plot.area",
    "fieldname": "plot_area",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Plot Area"
+   "label": "Plot Area",
+   "read_only": 1
   },
   {
    "fetch_from": "plot.units",
    "fieldname": "units",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Unit(s)"
+   "label": "Unit(s)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ggxn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cluster",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Cluster",
+   "link_filters": "[[\"Cluster\",\"cluster_name\",\"=\",\"eval: doc.cluster\"]]",
+   "options": "Cluster",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "cluster.cluster_name",
+   "fieldname": "cluster_name",
+   "fieldtype": "Data",
+   "label": "Cluster Name",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-09-03 12:14:40.593125",
+ "modified": "2024-09-09 23:14:19.580772",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "link plot owner",
