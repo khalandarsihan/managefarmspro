@@ -34,7 +34,7 @@
   "fertilization_schedule",
   "yield_estimation",
   "column_break_jzrq",
-  "geo_location",
+  "location",
   "works_tab",
   "general_information_section",
   "work_history"
@@ -154,11 +154,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "geo_location",
-   "fieldtype": "Geolocation",
-   "label": "Geo Location"
-  },
-  {
    "fieldname": "general_information_section",
    "fieldtype": "Section Break",
    "label": "General Information"
@@ -224,12 +219,17 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "Cluster Name"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Geolocation",
+   "label": "Geo Location"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-03 14:50:14.552585",
+ "modified": "2024-09-05 12:28:15.691532",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Plot",

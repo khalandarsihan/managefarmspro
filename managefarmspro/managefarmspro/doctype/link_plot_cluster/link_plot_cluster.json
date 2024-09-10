@@ -19,13 +19,15 @@
    "in_list_view": 1,
    "label": "Plot",
    "link_filters": "[[\"Plot\",\"cluster_name\",\"=\",\"eval: parent.cluster_name\"]]",
-   "options": "Plot"
+   "options": "Plot",
+   "read_only": 1
   },
   {
    "fetch_from": "plot.plot_name",
    "fieldname": "plot_name",
    "fieldtype": "Data",
-   "label": "Plot Name"
+   "label": "Plot Name",
+   "read_only": 1
   },
   {
    "fetch_from": "plot.area",
@@ -33,7 +35,8 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Plot Area",
-   "precision": "2"
+   "precision": "2",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_iyqd",
@@ -44,13 +47,14 @@
    "fieldname": "units",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Unit(s)"
+   "label": "Unit(s)",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-09-03 15:18:42.114622",
+ "modified": "2024-09-04 20:46:16.879944",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "link plot cluster",

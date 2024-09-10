@@ -24,7 +24,7 @@
   {
    "fieldname": "submitted_works_tab",
    "fieldtype": "Tab Break",
-   "label": "submitted works"
+   "label": "My Submitted Works"
   },
   {
    "fieldname": "work_list",
@@ -34,7 +34,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-31 17:10:05.816948",
+ "modified": "2024-09-07 18:03:47.633836",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Plot Supervisor",

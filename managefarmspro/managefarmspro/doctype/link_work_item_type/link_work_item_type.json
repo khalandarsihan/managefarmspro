@@ -1,0 +1,82 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-09-06 21:32:50.506884",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "work_item",
+  "item_name",
+  "column_break_ahff",
+  "quantity",
+  "unit_price",
+  "column_break_dxon",
+  "unit",
+  "cost"
+ ],
+ "fields": [
+  {
+   "fieldname": "work_item",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Work Item",
+   "options": "Work Item"
+  },
+  {
+   "fetch_from": "work_item.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item Name"
+  },
+  {
+   "fetch_from": "work_item.quantity",
+   "fieldname": "quantity",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Quantity"
+  },
+  {
+   "fieldname": "column_break_ahff",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "work_item.unit_price",
+   "fieldname": "unit_price",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Unit Price"
+  },
+  {
+   "fieldname": "column_break_dxon",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "work_item.unit",
+   "fieldname": "unit",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Unit"
+  },
+  {
+   "fetch_from": "work_item.cost",
+   "fieldname": "cost",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Cost"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-09-06 21:47:24.054835",
+ "modified_by": "Administrator",
+ "module": "Managefarmspro",
+ "name": "Link Work Item Type",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
