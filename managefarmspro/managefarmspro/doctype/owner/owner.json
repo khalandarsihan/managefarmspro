@@ -62,7 +62,6 @@
   {
    "fieldname": "plot_list",
    "fieldtype": "Table",
-   "label": "Plot List",
    "options": "link plot owner"
   },
   {
@@ -170,7 +169,7 @@
    "link_fieldname": "owner_name"
   }
  ],
- "modified": "2024-09-04 18:32:37.329526",
+ "modified": "2024-09-11 14:45:58.137311",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Owner",

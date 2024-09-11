@@ -12,8 +12,8 @@
   "cluster_name",
   "supervisor",
   "work_history_tab",
-  "work_history_section",
-  "work_history",
+  "work_details_section",
+  "table_bcjd",
   "plots_tab",
   "plots"
  ],
@@ -37,17 +37,6 @@
    "label": "Works"
   },
   {
-   "fieldname": "work_history_section",
-   "fieldtype": "Section Break",
-   "label": "Work History"
-  },
-  {
-   "fieldname": "work_history",
-   "fieldtype": "Table",
-   "label": "Work History",
-   "options": "Work History"
-  },
-  {
    "fieldname": "cluster_tab",
    "fieldtype": "Tab Break",
    "label": "Cluster"
@@ -60,7 +49,6 @@
   {
    "fieldname": "plots",
    "fieldtype": "Table",
-   "label": "Plots",
    "options": "link plot cluster"
   },
   {
@@ -68,11 +56,20 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Supervisor"
+  },
+  {
+   "fieldname": "work_details_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "table_bcjd",
+   "fieldtype": "Table",
+   "options": "Work Child"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-03 13:43:42.841020",
+ "modified": "2024-09-11 14:43:38.979318",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Cluster",
