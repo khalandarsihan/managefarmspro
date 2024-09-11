@@ -16,6 +16,7 @@
   "column_break_mzpi",
   "cluster",
   "plot_location",
+  "preferred_plot_name",
   "inspection_history_section",
   "last_inspection_date",
   "next_inspection_due_date",
@@ -36,8 +37,7 @@
   "column_break_jzrq",
   "location",
   "works_tab",
-  "general_information_section",
-  "work_history"
+  "work_details"
  ],
  "fields": [
   {
@@ -154,11 +154,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "general_information_section",
-   "fieldtype": "Section Break",
-   "label": "General Information"
-  },
-  {
    "fieldname": "inspection_history_section",
    "fieldtype": "Section Break",
    "label": "Inspection History"
@@ -195,12 +190,6 @@
    "label": "Attachments"
   },
   {
-   "fieldname": "work_history",
-   "fieldtype": "Table",
-   "label": "Work History",
-   "options": "Work History"
-  },
-  {
    "fetch_from": "owner_name.full_name",
    "fieldname": "full_name",
    "fieldtype": "Data",
@@ -224,12 +213,23 @@
    "fieldname": "location",
    "fieldtype": "Geolocation",
    "label": "Geo Location"
+  },
+  {
+   "fieldname": "preferred_plot_name",
+   "fieldtype": "Data",
+   "label": "Preferred Plot Name"
+  },
+  {
+   "fieldname": "work_details",
+   "fieldtype": "Table",
+   "label": "Work Details",
+   "options": "Work Child"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-05 12:28:15.691532",
+ "modified": "2024-09-11 11:52:13.759799",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Plot",

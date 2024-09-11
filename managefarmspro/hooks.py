@@ -226,3 +226,15 @@ app_license = "mit"
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
+
+
+doc_events = {
+	"Work": {
+		"on_update": [
+			"managefarmspro.managefarmspro.doctype.work.work.calculate_total_cost",
+			"managefarmspro.managefarmspro.doctype.work.work.update_work_child",
+		],
+		"on_submit": "managefarmspro.managefarmspro.doctype.work.work.update_work_child",
+		"on_cancel": "managefarmspro.managefarmspro.doctype.work.work.update_work_child",
+	}
+}

@@ -1,5 +1,4 @@
 {
- "_comments": "[{\"comment\": \"Action Failed<br><br>Option <strong>Work Item</strong> for field <strong>work_items</strong> is n...\", \"by\": \"Administrator\", \"name\": \"61iq5qmpri\"}, {\"comment\": \"Action Failed<br><br>Option <strong>Work Item</strong> for field <strong>work_items</strong> is n...\", \"by\": \"Administrator\", \"name\": \"6347erd11t\"}]",
  "actions": [],
  "allow_rename": 1,
  "autoname": "format:WORK-ID-{###}",
@@ -14,6 +13,8 @@
   "work_photos",
   "column_break_xtng",
   "description",
+  "total_cost",
+  "linked_invoice",
   "work_details",
   "labor_required",
   "equipment_required",
@@ -172,13 +173,28 @@
    "fieldname": "work_photos",
    "fieldtype": "Attach",
    "label": "Work Photos"
+  },
+  {
+   "fieldname": "total_cost",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total Cost",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "description": "The Sales Invoice generated for this work",
+   "fieldname": "linked_invoice",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Linked Invoice",
+   "options": "Sales Invoice"
   }
  ],
- "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-09-10 19:22:56.025606",
+ "modified": "2024-09-11 20:07:23.547000",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Work",
@@ -200,5 +216,6 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }
