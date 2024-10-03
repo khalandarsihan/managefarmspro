@@ -1,0 +1,50 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2024-09-29 08:23:09.810632",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [
+  {
+   "fieldname": "plot",
+   "fieldtype": "Link",
+   "label": "Plot",
+   "mandatory": 0,
+   "options": "Plot",
+   "wildcard_filter": 0
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date",
+   "mandatory": 1,
+   "wildcard_filter": 0
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date",
+   "mandatory": 1,
+   "wildcard_filter": 0
+  }
+ ],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letterhead": null,
+ "modified": "2024-09-29 08:55:05.705091",
+ "modified_by": "Administrator",
+ "module": "Managefarmspro",
+ "name": "Work Summary Report",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Work",
+ "report_name": "Work Summary Report",
+ "report_script": "def execute(filters=None):\n    # Define the columns for the report\n    columns = [\n        {\"fieldname\": \"name\", \"label\": \"Work ID\", \"fieldtype\": \"Data\", \"width\": 150},\n        {\"fieldname\": \"plot\", \"label\": \"Plot\", \"fieldtype\": \"Link\", \"options\": \"Plot\", \"width\": 150},\n        {\"fieldname\": \"work_date\", \"label\": \"Work Date\", \"fieldtype\": \"Date\", \"width\": 120},\n        {\"fieldname\": \"work_type_name\", \"label\": \"Work Name\", \"fieldtype\": \"Link\", \"options\": \"Work Item\", \"width\": 180},\n        {\"fieldname\": \"description\", \"label\": \"Description\", \"fieldtype\": \"Data\", \"width\": 250},\n        {\"fieldname\": \"total_cost\", \"label\": \"Total Cost\", \"fieldtype\": \"Currency\", \"width\": 120},\n        {\"fieldname\": \"linked_invoice\", \"label\": \"Linked Invoice\", \"fieldtype\": \"Link\", \"options\": \"Sales Invoice\", \"width\": 150}\n    ]\n\n    # Print the raw filters to check what values are being passed\n    frappe.msgprint(f\"Raw Filters: {filters}\")\n\n    # Retrieve filter values\n    plot_name = filters.get('plot') if filters and filters.get('plot') else None\n    start_date = filters.get('start_date') if filters and filters.get('start_date') else None\n    end_date = filters.get('end_date') if filters and filters.get('end_date') else None\n\n    # Print each filter value for verification\n    frappe.msgprint(f\"Received Filter Values - Plot: {plot_name}, Start Date: {start_date}, End Date: {end_date}\")\n\n    # Handle missing filters gracefully\n    if not plot_name:\n        frappe.msgprint(\"No plot selected! Please select a valid plot and try again.\")\n        return columns, []\n\n    if not start_date or not end_date:\n        frappe.msgprint(\"Please set the Start Date and End Date filters to run the report.\")\n        return columns, []\n\n    # Construct conditions for the SQL query\n    conditions = f\"AND plot = '{plot_name}' OR plot = '{plot_name.split('_')[-1]}' \"\n    if start_date and end_date:\n        conditions += f\"AND work_date BETWEEN '{start_date}' AND '{end_date}' \"\n\n    # Print constructed SQL conditions\n    frappe.msgprint(f\"Constructed SQL Conditions: {conditions}\")\n\n    # Construct the final SQL query\n    query = f\"\"\"\n        SELECT \n            name, plot, work_date, work_type_name, description, total_cost, linked_invoice\n        FROM `tabWork`\n        WHERE docstatus = 1 {conditions}\n        ORDER BY work_date ASC\n    \"\"\"\n    frappe.msgprint(f\"Executing SQL Query: {query}\")\n\n    # Execute the SQL query\n    data = frappe.db.sql(query, as_dict=True)\n\n    # Print the fetched data\n    frappe.msgprint(f\"Data Fetched: {data}\")\n\n    # Return the columns and data\n    return columns, data\n",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "System Manager"
+  }
+ ]
+}

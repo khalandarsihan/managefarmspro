@@ -9,10 +9,12 @@
   "plot_number",
   "area",
   "owner_name",
+  "customer_name",
   "column_break_syst",
   "plot_name",
   "units",
   "plot_status",
+  "supervision_charge",
   "column_break_mzpi",
   "cluster",
   "plot_location",
@@ -224,12 +226,28 @@
    "fieldtype": "Table",
    "label": "Work Details",
    "options": "Work Child"
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Link",
+   "label": "Customer Name",
+   "options": "Customer",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "description": "Supervision charge in %",
+   "fieldname": "supervision_charge",
+   "fieldtype": "Percent",
+   "label": "Supervision Charges",
+   "precision": "2",
+   "reqd": 1
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-11 11:52:13.759799",
+ "modified": "2024-10-02 15:47:22.690549",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Plot",
