@@ -11,6 +11,7 @@
   "owner_tab",
   "section_break_bidr",
   "full_name",
+  "customer",
   "owner_information_section",
   "first_name",
   "phone_number",
@@ -159,6 +160,14 @@
    "label": "Full Name",
    "read_only": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Linked Customer",
+   "options": "Customer",
+   "read_only": 1
   }
  ],
  "hide_toolbar": 1,
@@ -169,7 +178,7 @@
    "link_fieldname": "owner_name"
   }
  ],
- "modified": "2024-09-11 14:45:58.137311",
+ "modified": "2024-09-12 12:32:50.567895",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Owner",

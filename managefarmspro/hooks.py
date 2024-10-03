@@ -224,9 +224,9 @@ app_license = "mit"
 # export_python_type_annotations = True
 
 # default_log_clearing_doctypes = {
-# 	"Logging DocType Name": 30  # days to retain logs
-# }
 
+# Include the custom JS file for Work Doctype
+doctype_js = {"Work": "public/js/work.js"}
 
 doc_events = {
 	"Work": {
@@ -234,7 +234,10 @@ doc_events = {
 			"managefarmspro.managefarmspro.doctype.work.work.calculate_total_cost",
 			"managefarmspro.managefarmspro.doctype.work.work.update_work_child",
 		],
-		"on_submit": "managefarmspro.managefarmspro.doctype.work.work.update_work_child",
+		"on_submit": [
+			"managefarmspro.managefarmspro.doctype.work.work.update_work_child",
+			# "managefarmspro.managefarmspro.doctype.work.work.on_submit"
+		],
 		"on_cancel": "managefarmspro.managefarmspro.doctype.work.work.update_work_child",
 	}
 }

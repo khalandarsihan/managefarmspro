@@ -13,6 +13,7 @@ class Plot(Document):
 			self.remove_from_previous_cluster(self.previous_cluster_name)
 
 		self.update_owner_plot_list()
+		self.update_customer_plot_list()
 		self.update_cluster_plots()
 
 		# Fetch work data dynamically, assuming it's passed in self
@@ -68,6 +69,39 @@ class Plot(Document):
 			except frappe.DoesNotExistError:
 				frappe.log_error(
 					f"Owner {owner_name} not found while creating/updating Plot {self.name}",
+					"Populate Plot List Error",
+				)
+
+	def update_customer_plot_list(self):
+		# Update the list of plots for the corresponding Customer
+		customer_name = self.customer_name
+		if customer_name:
+			try:
+				customer_doc = frappe.get_doc("Customer", customer_name)
+				exists = False
+				for plot in customer_doc.plot_list:
+					if plot.plot == self.name:
+						plot.plot_name = self.plot_name
+						plot.plot_area = self.area
+						plot.plot_cluster = self.cluster
+						exists = True
+						break
+
+				if not exists:
+					customer_doc.append(
+						"plot_list",
+						{
+							"plot": self.name,
+							"plot_name": self.plot_name,
+							"plot_area": self.area,
+							"cluster": self.cluster,
+						},
+					)
+				customer_doc.save()
+
+			except frappe.DoesNotExistError:
+				frappe.log_error(
+					f"Customer {customer_name} not found while creating/updating Plot {self.name}",
 					"Populate Plot List Error",
 				)
 

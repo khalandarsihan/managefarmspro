@@ -17,7 +17,7 @@
    "label": "view 3"
   }
  ],
- "content": "[{\"id\":\"PqL1V1ny1N\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"card 1\",\"col\":3}},{\"id\":\"oN-4yVuYON\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">ManageFarmsPro</span>\",\"col\":12}},{\"id\":\"TfOJe5r18h\",\"type\":\"chart\",\"data\":{\"chart_name\":\"view 2\",\"col\":6}},{\"id\":\"x5bgzwacYZ\",\"type\":\"chart\",\"data\":{\"chart_name\":\"view 1\",\"col\":6}},{\"id\":\"pkXzEvzNLW\",\"type\":\"chart\",\"data\":{\"chart_name\":\"view 3\",\"col\":6}},{\"id\":\"Cux1un7p7e\",\"type\":\"chart\",\"data\":{\"chart_name\":\"view 4\",\"col\":6}}]",
+ "content": "[{\"id\":\"PqL1V1ny1N\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"card 1\",\"col\":3}},{\"id\":\"GSyDL-_E-R\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Monthly Plot Invoices\",\"col\":3}},{\"id\":\"oN-4yVuYON\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">ManageFarmsPro</span>\",\"col\":12}},{\"id\":\"TfOJe5r18h\",\"type\":\"chart\",\"data\":{\"chart_name\":\"view 2\",\"col\":6}},{\"id\":\"x5bgzwacYZ\",\"type\":\"chart\",\"data\":{\"chart_name\":\"view 1\",\"col\":6}},{\"id\":\"pkXzEvzNLW\",\"type\":\"chart\",\"data\":{\"chart_name\":\"view 3\",\"col\":6}},{\"id\":\"Cux1un7p7e\",\"type\":\"chart\",\"data\":{\"chart_name\":\"view 4\",\"col\":6}}]",
  "creation": "2024-08-05 10:52:28.263999",
  "custom_blocks": [],
  "docstatus": 0,
@@ -41,7 +41,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-08-12 19:58:32.376632",
+ "modified": "2024-09-29 20:30:24.944528",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "ManageFarmsPro",
@@ -61,6 +61,14 @@
   }
  ],
  "sequence_id": 1.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Monthly Plot Invoices",
+   "link_to": "Collated Plot Invoice",
+   "type": "Report"
+  }
+ ],
  "title": "ManageFarmsPro"
 }

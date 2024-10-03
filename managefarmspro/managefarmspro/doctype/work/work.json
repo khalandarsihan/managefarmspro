@@ -11,10 +11,13 @@
   "work_type_name",
   "work_date",
   "work_photos",
+  "customer",
+  "invoice_number",
   "column_break_xtng",
   "description",
   "total_cost",
   "linked_invoice",
+  "invoice_pdf_link",
   "work_details",
   "labor_required",
   "equipment_required",
@@ -84,6 +87,7 @@
   {
    "fieldname": "plot",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Plot",
    "options": "Plot"
   },
@@ -185,16 +189,37 @@
   {
    "description": "The Sales Invoice generated for this work",
    "fieldname": "linked_invoice",
+   "fieldtype": "Data",
+   "label": "Linked Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "customer",
    "fieldtype": "Link",
    "hidden": 1,
-   "label": "Linked Invoice",
-   "options": "Sales Invoice"
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "bold": 1,
+   "fieldname": "invoice_pdf_link",
+   "fieldtype": "Data",
+   "label": "Invoice PDF Link",
+   "options": "URL",
+   "read_only": 1
+  },
+  {
+   "fieldname": "invoice_number",
+   "fieldtype": "Link",
+   "label": "Invoice Number",
+   "options": "Sales Invoice",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-09-11 20:07:23.547000",
+ "modified": "2024-10-02 10:33:23.692356",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Work",
