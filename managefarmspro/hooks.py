@@ -226,20 +226,18 @@ app_license = "mit"
 # default_log_clearing_doctypes = {
 
 # Include the custom JS file for Work Doctype
-doctype_js = {
-    "Work": "public/js/work.js"
-}
+doctype_js = {"Work": "public/js/work.js"}
 
 doc_events = {
-    "Work": {
-        "on_update": [
-            "managefarmspro.managefarmspro.doctype.work.work.calculate_total_cost",
-            "managefarmspro.managefarmspro.doctype.work.work.update_work_child"
-        ],
-        "on_submit": [
-            "managefarmspro.managefarmspro.doctype.work.work.update_work_child",
-            # "managefarmspro.managefarmspro.doctype.work.work.on_submit"
-        ],
-        "on_cancel": "managefarmspro.managefarmspro.doctype.work.work.update_work_child"
-    }
+	"Work": {
+		"on_update": [
+			"managefarmspro.managefarmspro.doctype.work.work.calculate_total_cost",
+			"managefarmspro.managefarmspro.doctype.work.work.update_work_child",
+		],
+		"on_submit": [
+			"managefarmspro.managefarmspro.doctype.work.work.update_work_child",
+			# "managefarmspro.managefarmspro.doctype.work.work.on_submit"
+		],
+		"on_cancel": "managefarmspro.managefarmspro.doctype.work.work.update_work_child",
+	}
 }

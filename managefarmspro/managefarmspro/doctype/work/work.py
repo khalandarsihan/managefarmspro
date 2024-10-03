@@ -3,35 +3,39 @@ from frappe.model.document import Document
 from frappe.utils import add_days
 from frappe.utils.file_manager import save_file
 
+
 class Work(Document):
-    pass
+	pass
+
 
 # Function to calculate total cost based on child tables
 def calculate_total_cost(doc, method):
-    total_cost = sum(
-        (row.total_price or 0)
-        for table in [doc.equipment_table, doc.material_table, doc.labor_table]
-        if table
-        for row in table
-    )
-    doc.db_set("total_cost", total_cost, update_modified=False)
+	total_cost = sum(
+		(row.total_price or 0)
+		for table in [doc.equipment_table, doc.material_table, doc.labor_table]
+		if table
+		for row in table
+	)
+	doc.db_set("total_cost", total_cost, update_modified=False)
+
 
 # Function to update the Work Child table in the Plot Doctype
 def update_work_child(doc, method):
-    work_child_data = {
-        "work_id": doc.name,
-        "work_name": doc.work_type_name,
-        "work_date": doc.work_date,
-        "status": {0: "Draft", 1: "Submitted", 2: "Cancelled"}.get(doc.docstatus, "Unknown"),
-        "total_cost": doc.total_cost,
-        "parent": doc.plot,
-        "parentfield": "work_details",
-        "parenttype": "Plot"
-    }
-    if frappe.db.exists("Work Child", {"parent": doc.plot, "work_id": doc.name}):
-        frappe.db.set_value("Work Child", {"parent": doc.plot, "work_id": doc.name}, work_child_data)
-    else:
-        frappe.get_doc({"doctype": "Work Child", **work_child_data}).insert()
+	work_child_data = {
+		"work_id": doc.name,
+		"work_name": doc.work_type_name,
+		"work_date": doc.work_date,
+		"status": {0: "Draft", 1: "Submitted", 2: "Cancelled"}.get(doc.docstatus, "Unknown"),
+		"total_cost": doc.total_cost,
+		"parent": doc.plot,
+		"parentfield": "work_details",
+		"parenttype": "Plot",
+	}
+	if frappe.db.exists("Work Child", {"parent": doc.plot, "work_id": doc.name}):
+		frappe.db.set_value("Work Child", {"parent": doc.plot, "work_id": doc.name}, work_child_data)
+	else:
+		frappe.get_doc({"doctype": "Work Child", **work_child_data}).insert()
+
 
 # Create a Sales Invoice from the Work Doctype
 # def create_sales_invoice(doc, method=None):
@@ -91,17 +95,16 @@ def update_work_child(doc, method):
 #         # Generate the PDF and save it
 #         pdf_data = frappe.get_print("Sales Invoice", invoice.name, print_format="New SI-3", as_pdf=True)
 #         pdf_file = save_file(f"{invoice.name}.pdf", pdf_data, "Sales Invoice", invoice.name, is_private=0)
-        
+
 #         # Link the PDF back to the Work document
 #         doc.db_set("invoice_pdf_link", pdf_file.file_url)
-        
+
 #         # Trigger a real-time update to notify the client
 #         frappe.publish_realtime("pdf_generated", {"pdf_url": pdf_file.file_url, "doc_name": doc.name})
 #         frappe.logger().info(f"PDF for Sales Invoice {invoice.name} generated successfully at {pdf_file.file_url}")
 #     except Exception as e:
 #         frappe.throw(f"Failed to generate PDF: {str(e)}")
 #         frappe.log_error(f"Failed to generate PDF: {str(e)}", "PDF Generation Error")
-
 
 
 # # Hooked method for submitting the Work document
