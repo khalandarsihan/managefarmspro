@@ -64,14 +64,6 @@ jobs:
           bench --site development.localhost install-app payments
           bench --site development.localhost install-app managefarmspro
 
-      - name: Build Assets
-        working-directory: /home/runner/frappe-bench
-        run: bench build 
-
-      - name: Clean Up Bench Environment
-        working-directory: /home/runner/frappe-bench
-        run: bench destroy-all
-
 
       - name: Build Assets
         working-directory: /home/runner/frappe-bench
@@ -80,8 +72,7 @@ jobs:
       - name: Clean Up Docker Volumes
         run: docker volume prune -f
 
-
-
+    
   handle_completion:
     runs-on: ubuntu-latest
     needs: [tests]
