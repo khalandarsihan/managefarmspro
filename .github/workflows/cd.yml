@@ -36,8 +36,6 @@ jobs:
         run: |
           docker buildx build \
             --platform linux/amd64 \
-            --build-arg FRAPPE_REPO=https://github.com/khalandarsihan/frappe.git \
-            --build-arg FRAPPE_BRANCH=version-15 \
             --build-arg ERPNEXT_REPO=https://github.com/khalandarsihan/erpnext.git \
             --build-arg ERPNEXT_BRANCH=version-15 \
             --build-arg PAYMENTS_REPO=https://github.com/khalandarsihan/payments.git \
