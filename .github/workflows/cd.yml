@@ -4,10 +4,12 @@ on:
   pull_request:
     types: [closed]
     branches:
+
       - staging
     if: github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'develop'
 
   workflow_dispatch:  # Allows for manual workflow runs
+
 
 jobs:
   deploy:
@@ -16,6 +18,7 @@ jobs:
     steps:
     - name: Checkout Code
       uses: actions/checkout@v2
+
 
     - name: Generate Version Number
       run: |
@@ -40,10 +43,12 @@ jobs:
             exit 1
           fi
 
+
           # Step 3: Build the Docker image using the provided Containerfile
           docker build --build-arg=APPS_JSON_BASE64=${APPS_JSON_BASE64} \
             --tag=ghcr.io/${{ github.repository_owner }}/managefarmspro:${{ env.version }} \
             --file=/home/sihan/staging/frappe_docker/images/custom/Containerfile /home/sihan/staging/frappe_docker
+
 
           # Step 4: Login to the GitHub Container Registry **from the staging server**
           echo "${{ secrets.MY_PAT_SECRET }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
@@ -80,4 +85,5 @@ jobs:
           else
             echo "Deployment failed"
             exit 1
+
 
