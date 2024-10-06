@@ -1,21 +1,27 @@
-name: CI Pipeline
+name: CI
 
 on:
   push:
     branches:
-      - staging
+      - main
+      - develop
   pull_request:
     branches:
-      - staging
+      - main
+      - develop
 
 permissions:
   contents: read
   issues: write
   pull-requests: write
 
+concurrency:
+  group: main-managefarmspro-${{ github.event.number }}
+  cancel-in-progress: true
+
 jobs:
   tests:
-    runs-on: ubuntu-latest  # Using GitHub-hosted runner
+    runs-on: ubuntu-latest  # Use a GitHub-hosted runner
 
     services:
       mariadb:
@@ -26,61 +32,52 @@ jobs:
           - 3306:3306
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Step 2: Set up Python environment
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.11
+          python-version: '3.11'
 
-      # Step 3: Install Frappe Bench
       - name: Install Frappe Bench
         run: pip install frappe-bench
 
-      # Step 4: Initialize Bench with Forked Frappe Repository
-      # Use the `--frappe-path` option to point to your forked Frappe repository
       - name: Initialize Bench with Forked Frappe
         run: |
-          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" --frappe-path https://github.com/khalandarsihan/frappe --branch version-15 /home/runner/frappe-bench
+          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" --frappe-branch version-15 /home/runner/frappe-bench
         env:
           CI: 'Yes'
 
-      # Step 5: Remove Existing Frappe Directory (Prevent Conflicts)
-      - name: Remove Existing Frappe Directory
+      - name: Remove Existing Default Frappe Directory (if any)
         working-directory: /home/runner/frappe-bench/apps
         run: rm -rf frappe
 
-      # Step 6: Install ERPNext, Payments, and Custom App from Forked Repositories
-      - name: Install ERPNext, Payments, and Custom Apps
+      - name: Install Forked Apps (Frappe, ERPNext, Payments)
         working-directory: /home/runner/frappe-bench
         run: |
-          bench get-app erpnext https://github.com/khalandarsihan/erpnext --branch version-15
-          bench get-app payments https://github.com/khalandarsihan/payments --branch version-15
+          bench get-app frappe https://github.com/khalandarsihan/frappe.git --branch version-15
+          bench get-app erpnext https://github.com/khalandarsihan/erpnext.git --branch version-15
+          bench get-app payments https://github.com/khalandarsihan/payments.git --branch version-15
           bench get-app managefarmspro $GITHUB_WORKSPACE
 
-      # Step 7: Setup Frappe Site and Install the Apps
       - name: Setup Frappe Site and Install Apps
         working-directory: /home/runner/frappe-bench
         run: |
           bench new-site --db-root-password root --admin-password admin development.localhost
+          bench --site development.localhost install-app frappe
           bench --site development.localhost install-app erpnext
           bench --site development.localhost install-app payments
           bench --site development.localhost install-app managefarmspro
 
-      # Step 8: Build the Assets
       - name: Build Assets
         working-directory: /home/runner/frappe-bench
         run: bench build --site development.localhost
 
-      # Step 9: Run Tests for Custom App
       - name: Run Tests for Custom App
         working-directory: /home/runner/frappe-bench
         run: bench run-tests --app managefarmspro
 
-      # Step 10: Clean Up Bench Environment
       - name: Clean Up Bench Environment
         working-directory: /home/runner/frappe-bench
         run: bench destroy-all
