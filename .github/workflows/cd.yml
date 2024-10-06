@@ -43,7 +43,7 @@ jobs:
           # Step 3: Build the Docker image using the provided Containerfile
           docker build --build-arg=APPS_JSON_BASE64=${APPS_JSON_BASE64} \
             --tag=ghcr.io/${{ github.repository_owner }}/managefarmspro:${{ env.version }} \
-            --file=Containerfile .
+            --file=/home/sihan/staging/frappe_docker/images/custom/Containerfile /home/sihan/staging/frappe_docker
 
           # Step 4: Login to the GitHub Container Registry **from the staging server**
           echo "${{ secrets.MY_PAT_SECRET }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
