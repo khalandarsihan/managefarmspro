@@ -49,10 +49,9 @@ jobs:
         env:
           CI: 'Yes'
 
-      - name: Install Forked Apps (Frappe, ERPNext, Payments)
+      - name: Install Forked Apps (ERPNext, Payments)
         working-directory: /home/runner/frappe-bench
         run: |
-          bench get-app frappe https://github.com/khalandarsihan/frappe.git --branch version-15
           bench get-app erpnext https://github.com/khalandarsihan/erpnext.git --branch version-15
           bench get-app payments https://github.com/khalandarsihan/payments.git --branch version-15
           bench get-app managefarmspro $GITHUB_WORKSPACE
