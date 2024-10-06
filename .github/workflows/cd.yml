@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - staging  # Trigger CD on staging pushes
+  workflow_dispatch:
 
 permissions:
   contents: read
