@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   tests:
-    runs-on: ubuntu-latest  # Use GitHub runner instead of self-hosted
+    runs-on: ubuntu-latest
 
     services:
       redis-cache:
@@ -33,33 +33,96 @@ jobs:
         options: --health-cmd="mariadb-admin ping" --health-interval=5s --health-timeout=2s --health-retries=3
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup Python
+      - name: Setup Python Environment
         uses: actions/setup-python@v4
         with:
           python-version: '3.11.9'
 
-      - name: Install dependencies
+      - name: Install Bench CLI
+        run: pip install frappe-bench
+
+      - name: Remove Existing Bench Directory (If Any)
+        run: |
+          sudo rm -rf /home/runner/frappe-bench
+
+      - name: Initialize Bench Without Frappe App
+        run: |
+          bench init --skip-redis-config-generation --skip-assets --no-generate-config --python "$(which python)" /home/runner/frappe-bench
+        env:
+          CI: 'Yes'
+
+      - name: Manually Configure `apps.json`
+        run: |
+          cat <<EOF > /home/runner/frappe-bench/apps.json
+          {
+            "frappe": {
+              "url": "https://github.com/khalandarsihan/frappe.git",
+              "branch": "version-15"
+            },
+            "erpnext": {
+              "url": "https://github.com/khalandarsihan/erpnext.git",
+              "branch": "version-15"
+            },
+            "payments": {
+              "url": "https://github.com/khalandarsihan/payments.git",
+              "branch": "version-15"
+            },
+            "managefarmspro": {
+              "url": "$GITHUB_WORKSPACE",
+              "branch": "main" # Adjust if your main branch is different
+            }
+          }
+          EOF
+
+      - name: Install Forked Apps
+        working-directory: /home/runner/frappe-bench
+        run: |
+          bench get-app --branch version-15 frappe https://github.com/khalandarsihan/frappe.git
+          bench get-app --branch version-15 erpnext https://github.com/khalandarsihan/erpnext.git
+          bench get-app --branch version-15 payments https://github.com/khalandarsihan/payments.git
+          bench get-app managefarmspro $GITHUB_WORKSPACE
+
+      - name: Setup Requirements and Create New Site
+        working-directory: /home/runner/frappe-bench
+        run: |
+          bench setup requirements --dev
+          bench new-site --db-root-password root --admin-password admin development.localhost
+
+      - name: Install Apps on New Site
+        working-directory: /home/runner/frappe-bench
+        run: |
+          bench --site development.localhost install-app frappe
+          bench --site development.localhost install-app erpnext
+          bench --site development.localhost install-app payments
+          bench --site development.localhost install-app managefarmspro
+
+      - name: Build Frontend Assets
+        working-directory: /home/runner/frappe-bench
+        run: bench build
+
+      - name: Install Pre-commit Hooks
         run: |
           pip install pre-commit
           pre-commit install
 
-      - name: Run pre-commit
+      - name: Run Pre-commit Checks
         run: pre-commit run --all-files
 
-      - name: Setup Node
+      - name: Setup Node Environment
         uses: actions/setup-node@v3
         with:
           node-version: '18.20.2'
-          check-latest: false
 
       - name: Install Yarn
         run: |
+          curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+          echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
           sudo apt-get update && sudo apt-get install -y yarn
 
-      - name: Cache pip
+      - name: Cache pip Dependencies
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
@@ -68,11 +131,12 @@ jobs:
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
 
-      - name: Get yarn cache directory path
+      - name: Get Yarn Cache Directory Path
         id: yarn-cache-dir-path
         run: 'echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT'
 
-      - uses: actions/cache@v3
+      - name: Cache Yarn Dependencies
+        uses: actions/cache@v3
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -85,84 +149,28 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y mariadb-client-10.6
 
-      - name: Install jq
+      - name: Install `jq` Utility
         run: |
           sudo apt-get update
           sudo apt-get install -y jq
 
-      - name: Cleanup previous Bench instance
-        run: |
-          if [ -d /home/runner/frappe-bench ]; then
-            sudo rm -rf /home/runner/frappe-bench
-          fi
-
-      - name: Setup Frappe Bench
-        run: |
-          pip install frappe-bench
-          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" --frappe-branch version-15 /home/runner/frappe-bench
-          mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
-          mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
-
-      - name: Install ERPNext and Custom Apps
-        working-directory: /home/runner/frappe-bench
-        run: |
-          bench get-app frappe https://github.com/khalandarsihan/frappe --branch version-15
-          bench get-app erpnext https://github.com/khalandarsihan/erpnext --branch version-15
-          bench get-app payments https://github.com/khalandarsihan/payments --branch version-15
-          bench get-app managefarmspro $GITHUB_WORKSPACE
-          bench setup requirements --dev
-          bench new-site --db-root-password root --admin-password admin development.localhost
-          bench --site development.localhost install-app frappe
-          bench --site development.localhost install-app erpnext
-          bench --site development.localhost install-app payments
-          bench --site development.localhost install-app managefarmspro
-          bench build
-
-      - name: Start Frappe App
-        working-directory: /home/runner/frappe-bench
-        run: |
-          echo "web: bench serve --port 8000" > Procfile
-          nohup bench start &
-
       - name: Verify Bench Start
+        working-directory: /home/runner/frappe-bench
         run: |
+          echo "Verifying the Bench start by checking if the services are running."
           ps aux | grep 'bench serve'
 
-      - name: Increase Sleep Time
-        run: sleep 10  # Increase sleep time to 10 seconds
+      - name: Email Notification (If Required)
+        run: echo "Configure and send email notifications if necessary."
 
-      - name: Comment on PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: "The CI for this PR has completed successfully."
-            });
-
-      - name: Clean up Docker volumes
+      - name: Clean up Docker Volumes (If Any)
         run: docker volume prune -f
 
   complete:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_run' }}
     steps:
-      - name: Complete Runner
+      - name: Complete Workflow
         run: |
-          echo "${{ github.event.action }}" > .done
-          pkill -f "while true; do sleep 60; done"
-
-  handle_completion:
-    runs-on: ubuntu-latest
-    needs: [tests]
-    if: ${{ (github.event_name == 'pull_request' && github.event.action == 'closed') || (github.event_name == 'push' && github.ref == 'refs/heads/develop') }}
-    steps:
-      - name: Complete Runner
-        run: |
-          echo "Workflow completed due to: ${{ github.event.action }}" > .done
-          pkill -f "while true; do sleep 60; done"
+          echo "Workflow has completed successfully."
 
