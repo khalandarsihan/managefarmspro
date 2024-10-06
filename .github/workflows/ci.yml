@@ -45,7 +45,7 @@ jobs:
 
       - name: Initialize Bench with Forked Frappe
         run: |
-          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" --frappe-branch version-15 /home/runner/frappe-bench
+          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" --frappe-path https://github.com/khalandarsihan/frappe.git  --frappe-branch version-15 /home/runner/frappe-bench
         env:
           CI: 'Yes'
 
