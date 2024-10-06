@@ -49,10 +49,6 @@ jobs:
         env:
           CI: 'Yes'
 
-      - name: Remove Existing Default Frappe Directory (if any)
-        working-directory: /home/runner/frappe-bench/apps
-        run: rm -rf frappe
-
       - name: Install Forked Apps (Frappe, ERPNext, Payments)
         working-directory: /home/runner/frappe-bench
         run: |
