@@ -1,176 +1,58 @@
+# CI Workflow for managing Frappe and custom apps
 name: CI
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
-      - staging
-    types: [opened, synchronize, reopened]
-
-permissions:
-  contents: read
-  issues: write
-  pull-requests: write
+      - main
 
 jobs:
   tests:
     runs-on: ubuntu-latest
 
     services:
-      redis-cache:
-        image: redis:alpine
-        ports:
-          - 13000:6379
-      redis-queue:
-        image: redis:alpine
-        ports:
-          - 11000:6379
       mariadb:
         image: mariadb:10.6
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
           - 3306:3306
-        options: --health-cmd="mariadb-admin ping" --health-interval=5s --health-timeout=2s --health-retries=3
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup Python Environment
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11.9'
+          python-version: 3.11
 
-      - name: Install Bench CLI
+      - name: Install Frappe Bench
         run: pip install frappe-bench
 
-      - name: Remove Existing Bench Directory (If Any)
+      - name: Initialize Bench with Forked Frappe
         run: |
-          sudo rm -rf /home/runner/frappe-bench
+          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" --frappe-path https://github.com/khalandarsihan/frappe --branch version-15 /home/runner/frappe-bench
 
-      - name: Initialize Bench Without Frappe App
-        run: |
-          bench init --skip-redis-config-generation --skip-assets --no-generate-config --python "$(which python)" /home/runner/frappe-bench
-        env:
-          CI: 'Yes'
-
-      - name: Manually Configure `apps.json`
-        run: |
-          cat <<EOF > /home/runner/frappe-bench/apps.json
-          {
-            "frappe": {
-              "url": "https://github.com/khalandarsihan/frappe.git",
-              "branch": "version-15"
-            },
-            "erpnext": {
-              "url": "https://github.com/khalandarsihan/erpnext.git",
-              "branch": "version-15"
-            },
-            "payments": {
-              "url": "https://github.com/khalandarsihan/payments.git",
-              "branch": "version-15"
-            },
-            "managefarmspro": {
-              "url": "$GITHUB_WORKSPACE",
-              "branch": "main" # Adjust if your main branch is different
-            }
-          }
-          EOF
-
-      - name: Install Forked Apps
+      - name: Install ERPNext, Payments, and Custom App
         working-directory: /home/runner/frappe-bench
         run: |
-          bench get-app --branch version-15 frappe https://github.com/khalandarsihan/frappe.git
-          bench get-app --branch version-15 erpnext https://github.com/khalandarsihan/erpnext.git
-          bench get-app --branch version-15 payments https://github.com/khalandarsihan/payments.git
+          bench get-app erpnext https://github.com/khalandarsihan/erpnext --branch version-15
+          bench get-app payments https://github.com/khalandarsihan/payments --branch version-15
           bench get-app managefarmspro $GITHUB_WORKSPACE
 
-      - name: Setup Requirements and Create New Site
+      - name: Setup Frappe Site and Install Apps
         working-directory: /home/runner/frappe-bench
         run: |
-          bench setup requirements --dev
           bench new-site --db-root-password root --admin-password admin development.localhost
-
-      - name: Install Apps on New Site
-        working-directory: /home/runner/frappe-bench
-        run: |
-          bench --site development.localhost install-app frappe
           bench --site development.localhost install-app erpnext
           bench --site development.localhost install-app payments
           bench --site development.localhost install-app managefarmspro
 
-      - name: Build Frontend Assets
+      - name: Run Tests
         working-directory: /home/runner/frappe-bench
-        run: bench build
-
-      - name: Install Pre-commit Hooks
-        run: |
-          pip install pre-commit
-          pre-commit install
-
-      - name: Run Pre-commit Checks
-        run: pre-commit run --all-files
-
-      - name: Setup Node Environment
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18.20.2'
-
-      - name: Install Yarn
-        run: |
-          curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-          echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-          sudo apt-get update && sudo apt-get install -y yarn
-
-      - name: Cache pip Dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements.txt', '**/pyproject.toml', '**/setup.py', '**/setup.cfg') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-            ${{ runner.os }}-
-
-      - name: Get Yarn Cache Directory Path
-        id: yarn-cache-dir-path
-        run: 'echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT'
-
-      - name: Cache Yarn Dependencies
-        uses: actions/cache@v3
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - name: Install MariaDB Client
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y mariadb-client-10.6
-
-      - name: Install `jq` Utility
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-
-      - name: Verify Bench Start
-        working-directory: /home/runner/frappe-bench
-        run: |
-          echo "Verifying the Bench start by checking if the services are running."
-          ps aux | grep 'bench serve'
-
-      - name: Email Notification (If Required)
-        run: echo "Configure and send email notifications if necessary."
-
-      - name: Clean up Docker Volumes (If Any)
-        run: docker volume prune -f
-
-  complete:
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_run' }}
-    steps:
-      - name: Complete Workflow
-        run: |
-          echo "Workflow has completed successfully."
+        run: bench run-tests --app managefarmspro
 
