@@ -1,21 +1,26 @@
-# CI Workflow
-name: CI
+name: CI Pipeline
 
+# Trigger on push to staging or pull requests to staging
 on:
   push:
     branches:
-      - staging   # Run this workflow when pushing to the 'staging' branch
+      - staging
   pull_request:
     branches:
-      - staging   # Run this workflow for pull requests targeting the 'staging' branch
-    from:
-      - dev       # Optional: specify if you want to run only for PRs from 'dev'
+      - staging
+
+# Permissions required for actions to interact with GitHub
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Use GitHub-hosted runner
 
     services:
+      # Set up MariaDB service for the Frappe app
       mariadb:
         image: mariadb:10.6
         env:
@@ -24,28 +29,36 @@ jobs:
           - 3306:3306
 
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      # Step 2: Set up Python environment
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.11
 
+      # Step 3: Install Frappe Bench
       - name: Install Frappe Bench
         run: pip install frappe-bench
 
+      # Step 4: Initialize Bench with Forked Frappe Repository
       - name: Initialize Bench with Forked Frappe
         run: |
           bench init --skip-redis-config-generation --skip-assets --python "$(which python)" --frappe-path https://github.com/khalandarsihan/frappe --branch version-15 /home/runner/frappe-bench
+        env:
+          CI: 'Yes'
 
-      - name: Install ERPNext, Payments, and Custom App
+      # Step 5: Install ERPNext, Payments, and Custom App from Forked Repositories
+      - name: Install ERPNext, Payments, and Custom Apps
         working-directory: /home/runner/frappe-bench
         run: |
           bench get-app erpnext https://github.com/khalandarsihan/erpnext --branch version-15
           bench get-app payments https://github.com/khalandarsihan/payments --branch version-15
           bench get-app managefarmspro $GITHUB_WORKSPACE
 
+      # Step 6: Setup Frappe Site and Install the Apps
       - name: Setup Frappe Site and Install Apps
         working-directory: /home/runner/frappe-bench
         run: |
@@ -54,7 +67,27 @@ jobs:
           bench --site development.localhost install-app payments
           bench --site development.localhost install-app managefarmspro
 
-      - name: Run Tests
+      # Step 7: Build the Assets
+      - name: Build Assets
+        working-directory: /home/runner/frappe-bench
+        run: bench build --site development.localhost
+
+      # Step 8: Run Python Unit Tests for Custom App
+      - name: Run Tests for Custom App
         working-directory: /home/runner/frappe-bench
         run: bench run-tests --app managefarmspro
+
+      # Step 9: Clean Up
+      - name: Clean Up Bench Environment
+        working-directory: /home/runner/frappe-bench
+        run: bench destroy-all
+
+  handle_completion:
+    runs-on: ubuntu-latest
+    needs: [tests]
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/staging' }}
+    steps:
+      - name: Clean Up
+        run: |
+          echo "Clean up complete"
 
