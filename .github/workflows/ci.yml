@@ -3,244 +3,72 @@ name: CI
 on:
   pull_request:
     branches:
+      - main
       - staging
-    types: [opened, synchronize, reopened]
 
 permissions:
   contents: read
   issues: write
   pull-requests: write
 
+concurrency:
+  group: main-managefarmspro-${{ github.event.number }}
+  cancel-in-progress: true
+
 jobs:
   tests:
-    runs-on: self-hosted
-    strategy:
-      fail-fast: false
-    name: Server
+    runs-on: ubuntu-latest  # Use a GitHub-hosted runner
 
     services:
-      redis-cache:
-        image: redis:alpine
-        ports:
-          - 13000:6379
-      redis-queue:
-        image: redis:alpine
-        ports:
-          - 11000:6379
       mariadb:
         image: mariadb:10.6
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
           - 3306:3306
-        options: --health-cmd="mariadb-admin ping" --health-interval=5s --health-timeout=2s --health-retries=3
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11.9'
+          python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Install Frappe Bench
+        run: pip install frappe-bench
+
+      - name: Initialize Bench with Forked Frappe
         run: |
-          pip install pre-commit
-          pre-commit install
+          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" --frappe-path https://github.com/khalandarsihan/frappe.git  --frappe-branch version-15 /home/runner/frappe-bench
+        env:
+          CI: 'Yes'
 
-      - name: Run pre-commit
-        run: pre-commit run --all-files
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18.20.2'
-          check-latest: false
-
-      - name: Install Yarn
+      - name: Install Forked Apps (ERPNext, Payments)
+        working-directory: /home/runner/frappe-bench
         run: |
-          curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-          echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-          sudo apt-get update && sudo apt-get install -y yarn
-
-      - name: Cache pip
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements.txt', '**/pyproject.toml', '**/setup.py', '**/setup.cfg') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-            ${{ runner.os }}-
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: 'echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT'
-
-      - uses: actions/cache@v3
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - name: Install MariaDB Client
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y mariadb-client-10.6
-
-      - name: Install jq
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-
-      - name: Cleanup previous Bench instance
-        run: |
-          if [ -d /home/sihan/frappe-bench ]; then
-            sudo rm -rf /home/sihan/frappe-bench
-          fi
-          if [ -d /home/sihan/frappe-bench/apps/erpnext ]; then
-            sudo rm -rf /home/sihan/frappe-bench/apps/erpnext
-          fi
-          if [ -d /home/sihan/frappe-bench/apps/managefarmspro ]; then
-            sudo rm -rf /home/sihan/frappe-bench/apps/managefarmspro
-          fi
-
-      - name: Setup Frappe Bench
-        run: |
-          pip install frappe-bench
-          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" --frappe-branch version-15 /home/sihan/frappe-bench
-          mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
-          mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
-
-      - name: Install ERPNext and Custom App
-        working-directory: /home/sihan/frappe-bench
-        run: |
-          bench get-app erpnext https://github.com/khalandarsihan/erpnext --branch version-15
-          bench get-app payments --branch version-15
+          bench get-app erpnext https://github.com/khalandarsihan/erpnext.git --branch version-15
+          bench get-app payments https://github.com/khalandarsihan/payments.git --branch version-15
           bench get-app managefarmspro $GITHUB_WORKSPACE
-          bench setup requirements --dev
+
+      - name: Setup Frappe Site and Install Apps
+        working-directory: /home/runner/frappe-bench
+        run: |
           bench new-site --db-root-password root --admin-password admin development.localhost
           bench --site development.localhost install-app erpnext
           bench --site development.localhost install-app payments
           bench --site development.localhost install-app managefarmspro
-          bench build
-        env:
-          CI: 'Yes'
 
-      - name: Start Frappe App
-        working-directory: /home/sihan/frappe-bench
-        run: |
-          echo "web: bench serve --port 8000" > Procfile
-          nohup bench start &
-
-      - name: Verify Bench Start
-        run: |
-          ps aux | grep 'bench serve'
-
-      - name: Increase Sleep Time
-        run: sleep 10  # Increase sleep time to 10 seconds
-
-      - name: Download and Install Latest Ngrok
-        run: |
-          curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
-          echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
-          sudo apt-get update
-          sudo apt-get install ngrok
-
-      - name: Start Ngrok Tunnel
-        run: |
-          ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
-          nohup ngrok http --host-header=rewrite development.localhost:8000 &
-
-      - name: Get Ngrok URL
-        run: |
-          sleep 10  # Increase sleep time to ensure Ngrok tunnel is fully up
-          curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url > ngrok_url.txt
-          if [ ! -s ngrok_url.txt ]; then
-            echo "Ngrok URL file is empty. Exiting with error."
-            exit 1
-          fi
-        id: ngrok-url
-
-      - name: Display Ngrok URL
-        run: cat ngrok_url.txt
-
-      - name: Comment on PR with Ngrok URL
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const url = fs.readFileSync('ngrok_url.txt', 'utf8').trim();
-            if (!url) {
-              throw new Error('Ngrok URL is empty');
-            }
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `The Frappe site for this PR is available at: ${url}`
-            });
-
-      - name: Install ssmtp
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ssmtp
-
-      - name: Configure ssmtp
-        run: |
-          echo "root=${{ secrets.SMTP_USERNAME }}" | sudo tee /etc/ssmtp/ssmtp.conf
-          echo "mailhub=smtp.gmail.com:587" | sudo tee -a /etc/ssmtp/ssmtp.conf
-          echo "AuthUser=${{ secrets.SMTP_USERNAME }}" | sudo tee -a /etc/ssmtp/ssmtp.conf
-          echo "AuthPass=${{ secrets.SMTP_PASSWORD }}" | sudo tee -a /etc/ssmtp/ssmtp.conf
-          echo "UseTLS=YES" | sudo tee -a /etc/ssmtp/ssmtp.conf
-          echo "UseSTARTTLS=YES" | sudo tee -a /etc/ssmtp/ssmtp.conf
-
-      - name: Send Email Notification with Ngrok URL
-        run: |
-          url=$(cat ngrok_url.txt)
-          echo "Sending email with URL: $url"
-          echo -e "To: khasihan@gmail.com\nFrom: ${{ secrets.SMTP_USERNAME }}\nSubject: Ngrok URL for Frappe Site\n\nThe Frappe site for this PR is available at: $url" | ssmtp khasihan@gmail.com
-
-      - name: Pause Runner
-        run: |
-          echo "Pausing the runner..."
-          while true; do
-            sleep 60
-            if [ -f .done ]; then
-              echo "Runner completed due to: $(cat .done)"
-              break
-            fi
-            pr_state=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
-              | jq -r .state)
-            if [ "$pr_state" = "closed" ]; then
-              echo "PR is closed, exiting..."
-              break
-            fi
-          done
-
-      - name: Clean up Docker volumes
-        run: docker volume prune -f
-
-  complete:
-    runs-on: self-hosted
-    if: ${{ github.event_name == 'workflow_run' }}
-    steps:
-      - name: Complete Runner
-        run: |
-          echo "${{ github.event.action }}" > .done
-          pkill -f "while true; do sleep 60; done"
+      - name: Build Assets
+        working-directory: /home/runner/frappe-bench
+        run: bench build
 
   handle_completion:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: [tests]
-    if: ${{ (github.event_name == 'pull_request' && github.event.action == 'closed') || (github.event_name == 'push' && github.ref == 'refs/heads/develop') }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/staging' }}
     steps:
-      - name: Complete Runner
-        run: |
-          echo "Workflow completed due to: ${{ github.event.action }}" > .done
-          pkill -f "while true; do sleep 60; done"
+      - name: Complete CI Run
+        run: echo "CI Pipeline Completed Successfully"
+
