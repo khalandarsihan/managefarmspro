@@ -1,13 +1,15 @@
-# CI Workflow for managing Frappe and custom apps
+# CI Workflow
 name: CI
 
 on:
   push:
     branches:
-      - main
+      - staging   # Run this workflow when pushing to the 'staging' branch
   pull_request:
     branches:
-      - main
+      - staging   # Run this workflow for pull requests targeting the 'staging' branch
+    from:
+      - dev       # Optional: specify if you want to run only for PRs from 'dev'
 
 jobs:
   tests:
