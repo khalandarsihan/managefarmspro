@@ -1,6 +1,5 @@
 name: CI Pipeline
 
-# Trigger on push to staging or pull requests to staging
 on:
   push:
     branches:
@@ -9,7 +8,6 @@ on:
     branches:
       - staging
 
-# Permissions required for actions to interact with GitHub
 permissions:
   contents: read
   issues: write
@@ -54,9 +52,9 @@ jobs:
       - name: Install ERPNext, Payments, and Custom Apps
         working-directory: /home/runner/frappe-bench
         run: |
-          bench get-app erpnext https://github.com/khalandarsihan/erpnext --branch version-15
-          bench get-app payments https://github.com/khalandarsihan/payments --branch version-15
-          bench get-app managefarmspro $GITHUB_WORKSPACE
+          echo "y" | bench get-app erpnext https://github.com/khalandarsihan/erpnext --branch version-15
+          echo "y" | bench get-app payments https://github.com/khalandarsihan/payments --branch version-15
+          echo "y" | bench get-app managefarmspro $GITHUB_WORKSPACE
 
       # Step 6: Setup Frappe Site and Install the Apps
       - name: Setup Frappe Site and Install Apps
