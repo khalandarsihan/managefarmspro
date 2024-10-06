@@ -70,7 +70,7 @@ jobs:
 
       - name: Run Tests for Custom App
         working-directory: /home/runner/frappe-bench
-        run: bench run-tests --app managefarmspro
+        run: bench run-tests --site development.localhost --app managefarmspro
 
       - name: Clean Up Bench Environment
         working-directory: /home/runner/frappe-bench
