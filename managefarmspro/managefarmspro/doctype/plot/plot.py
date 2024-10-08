@@ -12,7 +12,7 @@ class Plot(Document):
 		if self.previous_cluster_name and self.previous_cluster_name != self.cluster_name:
 			self.remove_from_previous_cluster(self.previous_cluster_name)
 
-		self.update_owner_plot_list()
+		# self.update_owner_plot_list()
 		self.update_customer_plot_list()
 		self.update_cluster_plots()
 
@@ -39,38 +39,38 @@ class Plot(Document):
 				"Remove from Old Cluster Error",
 			)
 
-	def update_owner_plot_list(self):
-		# Update the list of plots for the corresponding Owner
-		owner_name = self.owner_name
-		if owner_name:
-			try:
-				owner_doc = frappe.get_doc("Owner", owner_name)
-				exists = False
-				for plot in owner_doc.plot_list:
-					if plot.plot == self.name:
-						plot.plot_name = self.plot_name
-						plot.plot_area = self.area
-						plot.plot_cluster = self.cluster
-						exists = True
-						break
+	# def update_owner_plot_list(self):
+	# 	# Update the list of plots for the corresponding Owner
+	# 	owner_name = self.owner_name
+	# 	if owner_name:
+	# 		try:
+	# 			owner_doc = frappe.get_doc("Owner", owner_name)
+	# 			exists = False
+	# 			for plot in owner_doc.plot_list:
+	# 				if plot.plot == self.name:
+	# 					plot.plot_name = self.plot_name
+	# 					plot.plot_area = self.area
+	# 					plot.plot_cluster = self.cluster
+	# 					exists = True
+	# 					break
 
-				if not exists:
-					owner_doc.append(
-						"plot_list",
-						{
-							"plot": self.name,
-							"plot_name": self.plot_name,
-							"plot_area": self.area,
-							"cluster": self.cluster,
-						},
-					)
-				owner_doc.save()
+	# 			if not exists:
+	# 				owner_doc.append(
+	# 					"plot_list",
+	# 					{
+	# 						"plot": self.name,
+	# 						"plot_name": self.plot_name,
+	# 						"plot_area": self.area,
+	# 						"cluster": self.cluster,
+	# 					},
+	# 				)
+	# 			owner_doc.save()
 
-			except frappe.DoesNotExistError:
-				frappe.log_error(
-					f"Owner {owner_name} not found while creating/updating Plot {self.name}",
-					"Populate Plot List Error",
-				)
+	# 		except frappe.DoesNotExistError:
+	# 			frappe.log_error(
+	# 				f"Owner {owner_name} not found while creating/updating Plot {self.name}",
+	# 				"Populate Plot List Error",
+	# 			)
 
 	def update_customer_plot_list(self):
 		# Update the list of plots for the corresponding Customer

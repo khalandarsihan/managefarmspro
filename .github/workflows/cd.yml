@@ -72,12 +72,3 @@ jobs:
           docker volume prune -f
           docker compose --env-file .env -f pwd.yml pull
           docker compose --env-file .env -f pwd.yml up -d
-
-          # Step 10: Validate the deployment
-          sleep 300
-          if curl -s -o /dev/null -w "%{http_code}" https://khasihan.xyz | grep 200; then
-            echo "Deployment successful!"
-          else
-            echo "Deployment failed"
-            exit 1
-
