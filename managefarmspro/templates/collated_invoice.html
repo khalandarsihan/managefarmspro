@@ -212,13 +212,13 @@
             </table>
 
             <!-- Total Cost for Each Invoice -->
-            <p style="font-weight: bold; margin-top: 10px; font-size: 16px; background-color: #f0f8ff; padding: 5px;">Subtotal for Items: ₹{{ '{:.2f}'.format(invoice.total_cost or 0) }}</p>
+            <p style="text-align: right; font-weight: bold; margin-top: 10px; font-size: 16px; background-color: #f0f8ff; padding: 5px;">Subtotal: ₹{{ '{:.2f}'.format(invoice.total_cost or 0) }}</p>
         </div>
         {% endfor %}
 
         <!-- Grand Total Section -->
         <div class="total-section">
-            <p class="total-line">Total for All Work Items: ₹{{ '{:.2f}'.format(grand_total) }}</p>
+            <p class="total-line">Total for All Works: ₹{{ '{:.2f}'.format(grand_total) }}</p>
             <p class="total-line">Supervision Charges: ₹{{ '{:.2f}'.format(supervision_charge) }}</p>
             <h3 style="color: #003366;">Grand Total : ₹{{ '{:.2f}'.format(final_grand_total) }}</h3>
             <p style="font-style: italic;">Grand Total in Words: {{ frappe.utils.money_in_words(final_grand_total) }}</p>

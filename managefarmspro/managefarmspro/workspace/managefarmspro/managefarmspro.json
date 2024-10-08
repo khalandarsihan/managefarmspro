@@ -1,23 +1,19 @@
 {
  "charts": [
   {
-   "chart_name": "Plots",
-   "label": "view 1"
+   "chart_name": "Daily Sales",
+   "label": "Work Type vs Revenue"
   },
   {
-   "chart_name": "view 4",
-   "label": "view 4"
+   "chart_name": "Total Works",
+   "label": "Daily Works Count"
   },
   {
-   "chart_name": "second chart",
-   "label": "view 2"
-  },
-  {
-   "chart_name": "plot 3",
-   "label": "view 3"
+   "chart_name": "Invoice Status",
+   "label": "Sales Invoice Status"
   }
  ],
- "content": "[{\"id\":\"PqL1V1ny1N\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"card 1\",\"col\":3}},{\"id\":\"GSyDL-_E-R\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Monthly Plot Invoices\",\"col\":3}},{\"id\":\"oN-4yVuYON\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">ManageFarmsPro</span>\",\"col\":12}},{\"id\":\"TfOJe5r18h\",\"type\":\"chart\",\"data\":{\"chart_name\":\"view 2\",\"col\":6}},{\"id\":\"x5bgzwacYZ\",\"type\":\"chart\",\"data\":{\"chart_name\":\"view 1\",\"col\":6}},{\"id\":\"pkXzEvzNLW\",\"type\":\"chart\",\"data\":{\"chart_name\":\"view 3\",\"col\":6}},{\"id\":\"Cux1un7p7e\",\"type\":\"chart\",\"data\":{\"chart_name\":\"view 4\",\"col\":6}}]",
+ "content": "[{\"id\":\"oN-4yVuYON\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h1\\\"><b>                  Philosan Farm Management</b></span>\",\"col\":12}},{\"id\":\"x93BHReIw7\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customers\",\"col\":3}},{\"id\":\"KgJ-8KRn3I\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Plots\",\"col\":3}},{\"id\":\"MlwaJpyPTF\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Works\",\"col\":3}},{\"id\":\"Zr3Wn1Rtt-\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Generate Invoice\",\"col\":3}},{\"id\":\"fdD2xuXs5o\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Customers\",\"col\":3}},{\"id\":\"urE5XnV80r\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Plots\",\"col\":3}},{\"id\":\"Qygqe0ueFG\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Works\",\"col\":3}},{\"id\":\"etQJMheibv\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Invoiced Amount\",\"col\":3}},{\"id\":\"BigEvAq73H\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Daily Works Count\",\"col\":6}},{\"id\":\"LM9-KUxdpS\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Sales Invoice Status\",\"col\":6}},{\"id\":\"UZ0jeFJQ7h\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Work Type vs Revenue\",\"col\":12}},{\"id\":\"V6DOROpP7i\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Recent Works\",\"col\":6}},{\"id\":\"l30ak0BLzC\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Unpaid Invoices\",\"col\":6}}]",
  "creation": "2024-08-05 10:52:28.263999",
  "custom_blocks": [],
  "docstatus": 0,
@@ -25,7 +21,7 @@
  "for_user": "",
  "hide_custom": 0,
  "icon": "agriculture",
- "idx": 0,
+ "idx": 3,
  "indicator_color": "",
  "is_hidden": 0,
  "label": "ManageFarmsPro",
@@ -41,20 +37,43 @@
    "type": "Link"
   }
  ],
- "modified": "2024-09-29 20:30:24.944528",
+ "modified": "2024-10-08 10:34:26.725566",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "ManageFarmsPro",
  "number_cards": [
   {
-   "label": "card 1",
-   "number_card_name": "c1"
+   "label": "Customers",
+   "number_card_name": "Customers"
+  },
+  {
+   "label": "Plots",
+   "number_card_name": "Count Of Plots"
+  },
+  {
+   "label": "Works",
+   "number_card_name": "Number of Works"
+  },
+  {
+   "label": "Invoiced Amount",
+   "number_card_name": "Total Outgoing Bills"
   }
  ],
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,
- "quick_lists": [],
+ "quick_lists": [
+  {
+   "document_type": "Work",
+   "label": "Recent Works",
+   "quick_list_filter": "[]"
+  },
+  {
+   "document_type": "Sales Invoice",
+   "label": "Unpaid Invoices",
+   "quick_list_filter": "[]"
+  }
+ ],
  "roles": [
   {
    "role": "All"
@@ -63,11 +82,36 @@
  "sequence_id": 1.0,
  "shortcuts": [
   {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Plots",
+   "link_to": "Plot",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Monthly Plot Invoices",
+   "label": "Generate Invoice",
    "link_to": "Collated Plot Invoice",
    "type": "Report"
+  },
+  {
+   "color": "Red",
+   "doc_view": "List",
+   "label": "Works",
+   "link_to": "Work",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "format": "{} Open",
+   "label": "Customers",
+   "link_to": "Customer",
+   "stats_filter": "[]",
+   "type": "DocType"
   }
  ],
  "title": "ManageFarmsPro"
