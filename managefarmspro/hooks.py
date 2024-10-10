@@ -12,6 +12,8 @@ app_license = "mit"
 # include js, css files in header of desk.html
 # app_include_css = "/assets/managefarmspro/css/managefarmspro.css"
 # app_include_js = "/assets/managefarmspro/js/managefarmspro.js"
+app_include_css = "/assets/managefarmspro/css/custom_help_menu.css"
+
 
 
 # include js, css files in header of web template
@@ -43,12 +45,22 @@ app_license = "mit"
 # ----------
 
 # application home page (will override Website Settings)
-# home_page = "login"
+# homepage = "managefarmspro"
+# home_page = "/app/ManageFarmsPro"
+# app_home = "/app/managefarmspro"
+
 
 # website user home page (by Role)
 # role_home_page = {
-# 	"Role": "home_page"
-# }
+#     "Farm Manager": "managefarmspro"
+# 	}
+
+
+# website redirect
+website_redirects = [
+    {"source": "/app/home", "target": "/app/managefarmspro"}
+]
+
 
 # Generators
 # ----------
