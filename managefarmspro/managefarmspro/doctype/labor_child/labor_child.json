@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "labor_name",
+  "item_display_name",
   "number_of_labor_units",
   "labor_unit",
   "unit_price",
@@ -16,8 +17,7 @@
   {
    "fieldname": "labor_name",
    "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Labor Name",
+   "label": "Labor Code",
    "link_filters": "[[\"Item\",\"item_group\",\"=\",\"Labor\"]]",
    "options": "Item",
    "read_only": 1
@@ -42,7 +42,7 @@
    "fieldname": "number_of_labor_units",
    "fieldtype": "Int",
    "in_list_view": 1,
-   "label": "Number of Units",
+   "label": "Quantity",
    "precision": "2",
    "read_only": 1
   },
@@ -52,12 +52,20 @@
    "in_list_view": 1,
    "label": "Unit",
    "read_only": 1
+  },
+  {
+   "fetch_from": "labor_name.item_name",
+   "fieldname": "item_display_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Labor Description",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-09-09 17:08:32.143643",
+ "modified": "2024-10-16 15:06:54.115835",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Labor Child",

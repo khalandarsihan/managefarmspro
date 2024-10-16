@@ -1,19 +1,19 @@
 {
  "charts": [
   {
+   "chart_name": "Invoice Status",
+   "label": "Invoice Status"
+  },
+  {
    "chart_name": "Daily Sales",
    "label": "Work Type vs Revenue"
   },
   {
    "chart_name": "Total Works",
    "label": "Daily Works Count"
-  },
-  {
-   "chart_name": "Invoice Status",
-   "label": "Sales Invoice Status"
   }
  ],
- "content": "[{\"id\":\"oN-4yVuYON\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h1\\\"><b>                  Philosan Farm Management</b></span>\",\"col\":12}},{\"id\":\"KgJ-8KRn3I\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Plots\",\"col\":3}},{\"id\":\"MlwaJpyPTF\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Works\",\"col\":3}},{\"id\":\"Zr3Wn1Rtt-\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Generate Invoice\",\"col\":3}},{\"id\":\"W1GQbTVSWT\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Invoiced files\",\"col\":3}},{\"id\":\"urE5XnV80r\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Plots\",\"col\":3}},{\"id\":\"Qygqe0ueFG\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Works\",\"col\":3}},{\"id\":\"fdD2xuXs5o\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Customers\",\"col\":3}},{\"id\":\"etQJMheibv\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Invoiced Amount\",\"col\":3}},{\"id\":\"BigEvAq73H\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Daily Works Count\",\"col\":6}},{\"id\":\"LM9-KUxdpS\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Sales Invoice Status\",\"col\":6}},{\"id\":\"UZ0jeFJQ7h\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Work Type vs Revenue\",\"col\":12}},{\"id\":\"V6DOROpP7i\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Recent Works\",\"col\":6}},{\"id\":\"l30ak0BLzC\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Unpaid Invoices\",\"col\":6}}]",
+ "content": "[{\"id\":\"oN-4yVuYON\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h1\\\"><b>                  Philosan Farm Management</b></span>\",\"col\":12}},{\"id\":\"KgJ-8KRn3I\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Plots\",\"col\":3}},{\"id\":\"MlwaJpyPTF\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Works\",\"col\":3}},{\"id\":\"Zr3Wn1Rtt-\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Generate Invoice\",\"col\":3}},{\"id\":\"W1GQbTVSWT\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Invoiced files\",\"col\":3}},{\"id\":\"fdD2xuXs5o\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Customers\",\"col\":3}},{\"id\":\"urE5XnV80r\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Plots\",\"col\":3}},{\"id\":\"Qygqe0ueFG\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Works\",\"col\":3}},{\"id\":\"etQJMheibv\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Invoiced Amount\",\"col\":3}},{\"id\":\"BigEvAq73H\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Daily Works Count\",\"col\":6}},{\"id\":\"LM9-KUxdpS\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Invoice Status\",\"col\":6}},{\"id\":\"UZ0jeFJQ7h\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Work Type vs Revenue\",\"col\":12}},{\"id\":\"V6DOROpP7i\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Recent Works\",\"col\":6}},{\"id\":\"l30ak0BLzC\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Unpaid Invoices\",\"col\":6}}]",
  "creation": "2024-08-05 10:52:28.263999",
  "custom_blocks": [],
  "docstatus": 0,
@@ -21,7 +21,7 @@
  "for_user": "",
  "hide_custom": 0,
  "icon": "agriculture",
- "idx": 4,
+ "idx": 6,
  "indicator_color": "",
  "is_hidden": 0,
  "label": "ManageFarmsPro",
@@ -37,7 +37,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-10-10 20:00:16.507814",
+ "modified": "2024-10-15 19:01:52.055239",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "ManageFarmsPro",

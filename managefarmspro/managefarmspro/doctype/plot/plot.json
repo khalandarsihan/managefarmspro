@@ -1,6 +1,6 @@
 {
  "actions": [],
- "autoname": "format:PLT_{####}",
+ "autoname": "field:plot_name",
  "creation": "2024-08-28 17:53:20.932443",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -96,11 +96,10 @@
    "fieldtype": "Column Break"
   },
   {
-   "default": "SF1",
    "fieldname": "plot_location",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Plot Location",
-   "options": "SF1\nTBD\nNA"
+   "options": "Plot Location"
   },
   {
    "fieldname": "section_break_nucz",
@@ -238,11 +237,11 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-08 10:02:36.112874",
+ "modified": "2024-10-15 21:36:10.889320",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Plot",
- "naming_rule": "Expression",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
@@ -258,8 +257,6 @@
    "write": 1
   }
  ],
- "search_fields": "plot_name",
- "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
