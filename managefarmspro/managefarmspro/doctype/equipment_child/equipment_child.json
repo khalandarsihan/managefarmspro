@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "item_name",
+  "item_display_name",
   "number_of_equipment_units",
   "equipment_unit",
   "unit_price",
@@ -33,7 +34,7 @@
    "fieldname": "number_of_equipment_units",
    "fieldtype": "Int",
    "in_list_view": 1,
-   "label": "Number of Units",
+   "label": "Quantity",
    "precision": "2",
    "read_only": 1
   },
@@ -47,17 +48,24 @@
   {
    "fieldname": "item_name",
    "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Item Name",
+   "label": "Equipment Code",
    "link_filters": "[[\"Item\",\"item_group\",\"=\",\"Equipment\"]]",
    "options": "Item",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "item_name.item_name",
+   "fieldname": "item_display_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": " Equipment description",
    "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-09-09 18:05:30.636839",
+ "modified": "2024-10-16 15:07:02.701370",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Equipment Child",

@@ -13,6 +13,7 @@
  ],
  "fields": [
   {
+   "default": "+91-",
    "fieldname": "phone_number",
    "fieldtype": "Phone",
    "in_list_view": 1,
@@ -38,7 +39,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-09-03 13:05:01.826876",
+ "modified": "2024-10-15 16:31:22.769343",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Partner",
