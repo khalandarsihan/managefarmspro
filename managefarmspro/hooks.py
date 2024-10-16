@@ -250,5 +250,3 @@ doc_events = {
 		"on_cancel": "managefarmspro.managefarmspro.doctype.work.work.update_work_child",
 	}
 }
-
-

@@ -7,6 +7,7 @@ from frappe.utils.file_manager import save_file
 class Work(Document):
 	pass
 
+
 # Function to calculate total cost based on child tables
 def calculate_total_cost(doc, method):
 	total_cost = sum(
@@ -16,7 +17,6 @@ def calculate_total_cost(doc, method):
 		for row in table
 	)
 	doc.db_set("total_cost", total_cost, update_modified=False)
-
 
 
 # Function to update the Work Child table in the Plot Doctype

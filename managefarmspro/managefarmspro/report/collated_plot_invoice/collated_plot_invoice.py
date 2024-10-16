@@ -262,12 +262,12 @@ def download_invoice_pdf(filters):
 			"file_url": f"/files/{file_name}",
 			"attached_to_doctype": "Sales Invoice",
 			"attached_to_name": invoice_number,
-			# "is_private": 1 
+			# "is_private": 1
 		}
 	)
 	file_doc.insert(ignore_permissions=True)
- 
- # Forcefully set the file as private if it didn't take on initial insert
+
+	# Forcefully set the file as private if it didn't take on initial insert
 	file_doc.is_private = 1
 	file_doc.save(ignore_permissions=True)
 
