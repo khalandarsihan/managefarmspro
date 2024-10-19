@@ -14,6 +14,7 @@ app_license = "mit"
 # app_include_js = "/assets/managefarmspro/js/managefarmspro.js"
 app_include_css = "/assets/managefarmspro/css/custom_help_menu.css"
 
+
 # include js, css files in header of web template
 # web_include_css = "/assets/managefarmspro/css/managefarmspro.css"
 # web_include_js = "/assets/managefarmspro/js/managefarmspro.js"

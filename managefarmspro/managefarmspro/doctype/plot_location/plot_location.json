@@ -12,13 +12,15 @@
   {
    "fieldname": "plot_location",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Plot Location",
+   "reqd": 1,
    "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-15 21:29:08.840433",
+ "modified": "2024-10-18 16:43:59.278192",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Plot Location",

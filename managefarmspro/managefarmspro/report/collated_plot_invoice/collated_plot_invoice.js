@@ -32,9 +32,13 @@ frappe.query_reports["Collated Plot Invoice"] = {
 				args: { filters: filters },
 				callback: function (response) {
 					if (response.message) {
-						// Use the returned PDF URL to trigger a direct download and add a timestamp to bypass the cache
-						const unique_url = response.message + `?ts=${new Date().getTime()}`;
-						window.open(unique_url, "_blank");
+						// Use the URL returned from the server
+						var file_url = response.message;
+
+						// Open the file in a new tab
+						window.open(file_url, "_blank");
+
+						// Display a success message
 						frappe.msgprint(__("PDF generated and saved to File Manager."));
 					}
 				},

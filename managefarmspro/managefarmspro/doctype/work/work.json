@@ -17,7 +17,7 @@
   "description",
   "total_cost",
   "linked_invoice",
-  "invoice_pdf_link",
+  "pdf_invoice_link",
   "work_details",
   "labor_required",
   "equipment_required",
@@ -40,8 +40,11 @@
   {
    "fieldname": "work_type_name",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Work Name",
-   "options": "Work Item"
+   "options": "Work Item",
+   "reqd": 1
   },
   {
    "fieldname": "equipment_required",
@@ -82,12 +85,15 @@
   {
    "fieldname": "work_date",
    "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Work Date"
   },
   {
    "fieldname": "plot",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Plot",
    "options": "Plot"
   },
@@ -191,6 +197,7 @@
    "fieldname": "linked_invoice",
    "fieldtype": "Data",
    "label": "Linked Invoice",
+   "options": "URL",
    "read_only": 1
   },
   {
@@ -201,25 +208,25 @@
    "options": "Customer"
   },
   {
-   "bold": 1,
-   "fieldname": "invoice_pdf_link",
-   "fieldtype": "Data",
-   "label": "Invoice PDF Link",
-   "options": "URL",
-   "read_only": 1
-  },
-  {
    "fieldname": "invoice_number",
    "fieldtype": "Link",
    "label": "Invoice Number",
    "options": "Sales Invoice",
+   "read_only": 1
+  },
+  {
+   "bold": 1,
+   "fieldname": "pdf_invoice_link",
+   "fieldtype": "Data",
+   "label": "PDF Invoice Link",
+   "options": "URL",
    "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-02 10:33:23.692356",
+ "modified": "2024-10-18 18:40:51.075325",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Work",

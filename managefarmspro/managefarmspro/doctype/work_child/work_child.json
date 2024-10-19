@@ -29,6 +29,7 @@
    "in_standard_filter": 1,
    "label": "Work Id",
    "options": "Work",
+   "read_only": 1,
    "search_index": 1
   },
   {
@@ -56,7 +57,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-09-30 16:54:55.384187",
+ "modified": "2024-10-19 15:28:08.428542",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Work Child",
