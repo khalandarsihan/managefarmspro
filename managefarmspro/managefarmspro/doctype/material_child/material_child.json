@@ -40,7 +40,7 @@
   },
   {
    "fieldname": "number_of_material_units",
-   "fieldtype": "Int",
+   "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Quantity",
    "precision": "2",
@@ -65,7 +65,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-10-16 12:28:46.975020",
+ "modified": "2024-10-20 19:11:53.256281",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Material Child",
