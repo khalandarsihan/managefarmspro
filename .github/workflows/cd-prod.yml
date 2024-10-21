@@ -3,14 +3,14 @@ name: Deploy from Staging to Production
 on:
   push:
     branches:
-      - main  # Trigger on push to the main branch
+      - main
   pull_request:
     types: [closed]
     branches:
-      - main  # Trigger on merging pull requests to the main branch
+      - main
     if: github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'staging'
 
-  workflow_dispatch:  # Manual trigger option
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -24,6 +24,7 @@ jobs:
       id: get-latest-tag
       run: |
         latest_tag=$(gh api "/users/${{ github.repository_owner }}/packages/container/managefarmspro/versions?package_type=container" --jq '.[].metadata.container.tags[0]' | sort -r | head -n 1)
+        echo "Latest Tag: $latest_tag"
         echo "::set-output name=tag::$latest_tag"
 
     - name: Deploy to Production Server
@@ -33,9 +34,11 @@ jobs:
         username: ${{ secrets.PROD_SSH_USERNAME }}
         key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
         script: |
-          docker pull ghcr.io/${{ github.repository_owner }}/managefarmspro:${{ steps.get-latest-tag.outputs.tag }}
+          latest_tag=${{ steps.get-latest-tag.outputs.tag }}
+          echo "Deploying image with tag: $latest_tag"
+          docker pull ghcr.io/${{ github.repository_owner }}/managefarmspro:$latest_tag
           export CUSTOM_IMAGE="ghcr.io/${{ github.repository_owner }}/managefarmspro"
-          export CUSTOM_TAG="${{ steps.get-latest-tag.outputs.tag }}"
+          export CUSTOM_TAG="$latest_tag"
           cd /home/sihan/production/frappe_docker
           sed -i "s|ghcr.io/khalandarsihan/managefarmspro/frappe-app:.*|${CUSTOM_IMAGE}:${CUSTOM_TAG}|g" pwd.yml
           docker compose --env-file .env -f pwd.yml down
