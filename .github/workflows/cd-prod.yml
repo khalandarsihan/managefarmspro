@@ -19,20 +19,18 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v2
 
-    # Set GH_TOKEN to authenticate GitHub CLI in the environment
     - name: Get Latest Image Tag from GHCR
       id: get-latest-tag
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.MY_PAT_SECRET }}  # Use your PAT for authentication
       run: |
         latest_tag=$(gh api "/users/${{ github.repository_owner }}/packages/container/managefarmspro/versions?package_type=container" --jq '.[].metadata.container.tags[0]' | sort -r | head -n 1)
-        echo "Latest Tag: $latest_tag"
-        echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV  # Set the tag as an environment variable
+        echo "latest_tag=$latest_tag" >> $GITHUB_ENV  # Set it as an environment variable
+        echo "Latest Tag: $latest_tag"  # Debugging
 
-    # Debugging step to print the latest tag
     - name: Debug Latest Tag
       run: |
-        echo "The latest tag fetched: ${{ env.LATEST_TAG }}"
+        echo "The latest tag fetched: ${{ env.latest_tag }}"  # Confirm the tag is set
 
     - name: Deploy to Production Server
       uses: appleboy/ssh-action@v0.1.5
@@ -41,7 +39,7 @@ jobs:
         username: ${{ secrets.PROD_SSH_USERNAME }}
         key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
         script: |
-          latest_tag=${{ env.LATEST_TAG }}
+          latest_tag=${{ env.latest_tag }}
           echo "Deploying image with tag: $latest_tag"
           docker pull ghcr.io/${{ github.repository_owner }}/managefarmspro:$latest_tag
           export CUSTOM_IMAGE="ghcr.io/${{ github.repository_owner }}/managefarmspro"
