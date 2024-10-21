@@ -23,7 +23,7 @@ jobs:
     - name: Get Latest Image Tag from GHCR
       id: get-latest-tag
       run: |
-        tags=$(curl -H "Authorization: Bearer ${{ secrets.PROD_PAT_SECRET }}" \
+        tags=$(curl -H "Authorization: Bearer ${{ secrets.MY_PAT_SECRET }}" \
           https://ghcr.io/v2/${{ github.repository_owner }}/managefarmspro/tags/list | jq -r '.tags[]')
         latest_tag=$(echo "$tags" | grep -E '^[0-9]{14}$' | sort -r | head -n 1)
         echo "::set-output name=tag::$latest_tag"
