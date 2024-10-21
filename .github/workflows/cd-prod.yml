@@ -24,7 +24,6 @@ jobs:
       id: get-latest-tag
       run: |
         latest_tag=$(gh api "/users/${{ github.repository_owner }}/packages/container/managefarmspro/versions?package_type=container" --jq '.[].metadata.container.tags[0]' | sort -r | head -n 1)
-        echo "Latest Tag: $latest_tag"
         echo "::set-output name=tag::$latest_tag"
 
     - name: Deploy to Production Server
