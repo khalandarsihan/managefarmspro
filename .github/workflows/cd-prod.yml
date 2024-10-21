@@ -9,7 +9,6 @@ on:
     branches:
       - main
     if: github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'staging'
-
   workflow_dispatch:
 
 jobs:
@@ -20,12 +19,19 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v2
 
+    # Fetch the latest tag from GHCR
     - name: Get Latest Image Tag from GHCR
       id: get-latest-tag
       run: |
         latest_tag=$(gh api "/users/${{ github.repository_owner }}/packages/container/managefarmspro/versions?package_type=container" --jq '.[].metadata.container.tags[0]' | sort -r | head -n 1)
         echo "Latest Tag: $latest_tag"
+        # Debugging step to check the tag value
         echo "::set-output name=tag::$latest_tag"
+
+    # Additional debugging step
+    - name: Debug Latest Tag
+      run: |
+        echo "The latest tag fetched: ${{ steps.get-latest-tag.outputs.tag }}"
 
     - name: Deploy to Production Server
       uses: appleboy/ssh-action@v0.1.5
