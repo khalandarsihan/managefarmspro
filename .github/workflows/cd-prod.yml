@@ -53,4 +53,3 @@ jobs:
           docker volume prune -f
           docker compose --env-file .env -f pwd.yml pull
           docker compose --env-file .env -f pwd.yml up -d
-
