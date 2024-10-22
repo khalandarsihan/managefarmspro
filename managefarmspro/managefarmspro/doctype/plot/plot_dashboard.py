@@ -38,6 +38,21 @@ from frappe import _
 # from frappe import _
 
 
+# def get_data():
+# 	return {
+# 		"fieldname": "plot",  # The linking field in the Work Doctype
+# 		"non_standard_fieldnames": {
+# 			"Work": "plot",  # Ensures that the 'plot' link field is defined in Work Doctype
+# 		},
+# 		"transactions": [
+# 			{
+# 				"label": _("Work Activities"),
+# 				"items": ["Work"],  # Include all linked Doctypes here
+# 			}
+# 		],
+# 	}
+
+
 def get_data():
 	return {
 		"fieldname": "plot",  # The linking field in the Work Doctype
@@ -46,7 +61,6 @@ def get_data():
 		},
 		"transactions": [
 			{
-				"label": _("Work Activities"),
 				"items": ["Work"],  # Include all linked Doctypes here
 			}
 		],
