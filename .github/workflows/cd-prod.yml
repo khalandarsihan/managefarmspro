@@ -30,7 +30,9 @@ jobs:
 
     - name: Debug Latest Tag
       run: |
+
         echo "The latest tag fetched: ${{ env.latest_tag }}"  # Confirm the tag is set
+
 
     - name: Deploy to Production Server
       uses: appleboy/ssh-action@v0.1.5
@@ -51,3 +53,4 @@ jobs:
           docker volume prune -f
           docker compose --env-file .env -f pwd.yml pull
           docker compose --env-file .env -f pwd.yml up -d
+
