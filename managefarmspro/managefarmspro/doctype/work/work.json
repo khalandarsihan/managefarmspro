@@ -22,14 +22,18 @@
   "labor_required",
   "equipment_required",
   "material_required",
+  "column_break_nvyk",
+  "labor_count",
+  "equipment_count",
+  "number_of_material_units",
   "column_break_avkx",
   "number_of_labor_units",
   "number_of_equipment_units",
-  "number_of_material_units",
+  "material_unit",
   "column_break_fwhs",
   "labor_unit",
   "equipment_unit",
-  "material_unit",
+  "material_count",
   "section_break_bjeb",
   "labor_table",
   "equipment_table",
@@ -95,7 +99,8 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Plot",
-   "options": "Plot"
+   "options": "Plot",
+   "reqd": 1
   },
   {
    "fieldname": "amended_from",
@@ -222,12 +227,33 @@
    "label": "PDF Invoice Link",
    "options": "URL",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_nvyk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "labor_count",
+   "fieldtype": "Data",
+   "label": "Labor Count"
+  },
+  {
+   "fieldname": "equipment_count",
+   "fieldtype": "Data",
+   "label": "Equipment Count"
+  },
+  {
+   "fieldname": "material_count",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Material Count",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-20 19:11:23.340812",
+ "modified": "2024-10-28 16:34:36.236859",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Work",
