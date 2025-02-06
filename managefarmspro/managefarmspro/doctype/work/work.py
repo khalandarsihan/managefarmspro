@@ -4,8 +4,35 @@ from frappe.utils import add_days
 from frappe.utils.file_manager import save_file
 
 
+# In work.py
 class Work(Document):
-	pass
+    def on_submit(self):
+        self.update_plot_totals()
+        
+    def on_cancel(self):
+        self.update_plot_totals()
+        
+    def update_plot_totals(self):
+        if self.plot:
+            # Get total spent from submitted works
+            plot_total = frappe.db.sql("""
+                SELECT SUM(total_cost) 
+                FROM `tabWork` 
+                WHERE plot = %s 
+                AND docstatus = 1
+            """, self.plot)[0][0] or 0
+            
+            # Get plot document to access monthly budget
+            plot_doc = frappe.get_doc('Plot', self.plot)
+            
+            # Calculate maintenance balance
+            maintenance_balance = (plot_doc.monthly_maintenance_budget or 0) - plot_total
+            
+            # Update both fields
+            frappe.db.set_value('Plot', self.plot, {
+                'total_amount_spent': plot_total,
+                'maintenance_balance': maintenance_balance
+            }, update_modified=False)
 
 
 # Function to calculate total cost based on child tables
