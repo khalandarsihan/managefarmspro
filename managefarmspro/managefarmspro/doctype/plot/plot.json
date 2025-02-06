@@ -288,6 +288,8 @@
    "bold": 1,
    "fieldname": "maintenance_balance",
    "fieldtype": "Currency",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Maintenance Balance",
    "read_only": 1
   }
@@ -295,7 +297,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-05 16:40:31.067061",
+ "modified": "2025-02-06 13:33:38.702518",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Plot",

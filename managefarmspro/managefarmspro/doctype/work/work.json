@@ -8,6 +8,7 @@
  "field_order": [
   "work_information",
   "plot",
+  "maintenance_balance",
   "work_type_name",
   "work_date",
   "work_photos",
@@ -248,12 +249,19 @@
    "hidden": 1,
    "label": "Material Count",
    "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.plot\n",
+   "fetch_from": "plot.maintenance_balance",
+   "fieldname": "maintenance_balance",
+   "fieldtype": "Currency",
+   "label": "Maintenance Balance"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-28 16:34:36.236859",
+ "modified": "2025-02-06 15:09:29.084576",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Work",

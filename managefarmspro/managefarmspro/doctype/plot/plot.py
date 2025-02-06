@@ -205,3 +205,4 @@ class Plot(Document):
 					f"Cluster {cluster_name} not found while updating work details for Plot {self.name}",
 					"Update Work Details Error",
 				)
+    

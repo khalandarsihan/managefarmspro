@@ -4,7 +4,6 @@ from frappe.utils import add_days
 from frappe.utils.file_manager import save_file
 
 
-# In work.py
 class Work(Document):
     def on_submit(self):
         self.update_plot_totals()
