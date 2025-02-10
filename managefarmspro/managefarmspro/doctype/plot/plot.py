@@ -1,8 +1,43 @@
 import frappe
 from frappe.model.document import Document
+from frappe.utils import get_first_day, get_last_day, getdate
 
 
 class Plot(Document):
+	def validate(self):
+		# Sync maintenance_balance when monthly_maintenance_budget changes
+		if self.has_value_changed("monthly_maintenance_budget"):
+			self.maintenance_balance = self.monthly_maintenance_budget
+
+		# Only proceed with maintenance checks if budget is set
+		if self.monthly_maintenance_budget:
+			self.check_monthly_reset()
+
+	def before_insert(self):
+		if self.monthly_maintenance_budget:
+			# Initialize maintenance balance with budget amount for new plots
+			self.maintenance_balance = self.monthly_maintenance_budget
+			self.total_amount_spent = 0
+			self.last_maintenance_reset = get_first_day(getdate())
+			# self.db_update()
+			# frappe.db.commit()
+
+	def check_monthly_reset(self):
+		if not self.monthly_maintenance_budget:
+			return
+
+		current_date = getdate()
+		month_start = get_first_day(current_date)
+
+		# Get the last maintenance reset date
+		last_reset_date = self.get("last_maintenance_reset") or month_start
+
+		# If we're in a new month or this is first time
+		if getdate(last_reset_date) < month_start:
+			self.maintenance_balance = self.monthly_maintenance_budget
+			self.total_amount_spent = 0
+			self.last_maintenance_reset = month_start
+
 	def before_save(self):
 		# Capture the old cluster value before it's modified during the update
 		self.previous_cluster_name = frappe.db.get_value("Plot", self.name, "cluster_name", cache=False)

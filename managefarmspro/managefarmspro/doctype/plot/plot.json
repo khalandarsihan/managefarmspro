@@ -13,11 +13,20 @@
   "plot_name",
   "units",
   "plot_status",
-  "supervision_charge",
   "column_break_mzpi",
   "cluster",
   "plot_location",
   "preferred_plot_name",
+  "budget_settings_section",
+  "monthly_maintenance_budget",
+  "column_break_bdcv",
+  "supervision_charge",
+  "section_break_twca",
+  "this_months_spending_column",
+  "total_amount_spent",
+  "last_maintenance_reset",
+  "column_break_dgbu",
+  "maintenance_balance",
   "inspection_history_section",
   "last_inspection_date",
   "next_inspection_due_date",
@@ -150,6 +159,7 @@
   {
    "fieldname": "inspection_history_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Inspection History"
   },
   {
@@ -232,18 +242,69 @@
    "search_index": 1
   },
   {
+   "bold": 1,
    "description": "Supervision charge in %",
    "fieldname": "supervision_charge",
    "fieldtype": "Percent",
    "label": "Supervision Charges",
    "precision": "2",
    "reqd": 1
+  },
+  {
+   "fieldname": "budget_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Budget Settings"
+  },
+  {
+   "bold": 1,
+   "fieldname": "monthly_maintenance_budget",
+   "fieldtype": "Currency",
+   "label": "Monthly Maintenance Budget"
+  },
+  {
+   "fieldname": "column_break_bdcv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_twca",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "this_months_spending_column",
+   "fieldtype": "Column Break",
+   "label": "This Month's Spending"
+  },
+  {
+   "bold": 1,
+   "fieldname": "total_amount_spent",
+   "fieldtype": "Currency",
+   "label": "Total Amount Spent",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_dgbu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "bold": 1,
+   "fieldname": "maintenance_balance",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Maintenance Balance",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_maintenance_reset",
+   "fieldtype": "Date",
+   "hidden": 1,
+   "label": "Last Maintenance Reset"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-22 17:52:33.187269",
+ "modified": "2025-02-06 17:54:32.708577",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Plot",
