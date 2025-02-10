@@ -13,14 +13,14 @@ class Plot(Document):
 		if self.monthly_maintenance_budget:
 			self.check_monthly_reset()
 
-	def after_insert(self):
+	def before_insert(self):
 		if self.monthly_maintenance_budget:
 			# Initialize maintenance balance with budget amount for new plots
 			self.maintenance_balance = self.monthly_maintenance_budget
 			self.total_amount_spent = 0
 			self.last_maintenance_reset = get_first_day(getdate())
-			self.db_update()
-			frappe.db.commit()
+			# self.db_update()
+			# frappe.db.commit()
 
 	def check_monthly_reset(self):
 		if not self.monthly_maintenance_budget:
