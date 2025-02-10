@@ -7,6 +7,7 @@ import uuid
 import frappe
 from frappe import _
 from frappe.query_builder import DocType
+from frappe.utils import add_days
 from frappe.utils.pdf import get_pdf
 
 
@@ -25,7 +26,7 @@ def get_columns():
 		{"fieldname": "work_date", "label": _("Work Date"), "fieldtype": "Date", "width": 120},
 		{"fieldname": "work_name", "label": _("Work Name"), "fieldtype": "Data", "width": 180},
 		{"fieldname": "work_id", "label": _("Work ID"), "fieldtype": "Data", "width": 150},
-		{"fieldname": "description", "label": _("Description"), "fieldtype": "Data", "width": 250},
+		{"fieldname": "description", "label": _("Description"), "fieldtype": "Data", "width": 450},
 		{"fieldname": "total_cost", "label": _("Total Cost"), "fieldtype": "Currency", "width": 120},
 	]
 
@@ -171,12 +172,13 @@ def download_invoice_pdf(filters):
 			"customer": customer,
 			"company": company,
 			"plot": plot_name,
-			"posting_date": filters.get("start_date"),
-			"due_date": filters.get("end_date"),
+			"posting_date": filters.get("end_date"),
+			"due_date": add_days(filters.get("end_date"), 30),
 			"update_stock": 1,
 			"set_warehouse": "Main Warehouse - PFM",
 			"cost_center": "Main - PFM",
 			"items": [],
+			"set_posting_time": 1,
 		}
 	)
 
