@@ -20,6 +20,7 @@ class Plot(Document):
 			self.total_amount_spent = 0
 			self.last_maintenance_reset = get_first_day(getdate())
 			self.db_update()
+			frappe.db.commit()
 
 	def check_monthly_reset(self):
 		if not self.monthly_maintenance_budget:
