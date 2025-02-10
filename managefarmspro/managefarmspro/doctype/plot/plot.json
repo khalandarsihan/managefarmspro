@@ -24,6 +24,7 @@
   "section_break_twca",
   "this_months_spending_column",
   "total_amount_spent",
+  "last_maintenance_reset",
   "column_break_dgbu",
   "maintenance_balance",
   "inspection_history_section",
@@ -292,12 +293,18 @@
    "in_standard_filter": 1,
    "label": "Maintenance Balance",
    "read_only": 1
+  },
+  {
+   "fieldname": "last_maintenance_reset",
+   "fieldtype": "Date",
+   "hidden": 1,
+   "label": "Last Maintenance Reset"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-06 13:33:38.702518",
+ "modified": "2025-02-06 17:54:32.708577",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Plot",
