@@ -2,12 +2,13 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import get_first_day, get_last_day, getdate
 
+
 class Plot(Document):
 	def validate(self):
 		# Sync maintenance_balance when monthly_maintenance_budget changes
-		if self.has_value_changed('monthly_maintenance_budget'):
+		if self.has_value_changed("monthly_maintenance_budget"):
 			self.maintenance_balance = self.monthly_maintenance_budget
-		
+
 		# Only proceed with maintenance checks if budget is set
 		if self.monthly_maintenance_budget:
 			self.check_monthly_reset()
@@ -23,13 +24,13 @@ class Plot(Document):
 	def check_monthly_reset(self):
 		if not self.monthly_maintenance_budget:
 			return
-			
+
 		current_date = getdate()
 		month_start = get_first_day(current_date)
-		
+
 		# Get the last maintenance reset date
-		last_reset_date = self.get('last_maintenance_reset') or month_start
-		
+		last_reset_date = self.get("last_maintenance_reset") or month_start
+
 		# If we're in a new month or this is first time
 		if getdate(last_reset_date) < month_start:
 			self.maintenance_balance = self.monthly_maintenance_budget
@@ -238,5 +239,3 @@ class Plot(Document):
 					f"Cluster {cluster_name} not found while updating work details for Plot {self.name}",
 					"Update Work Details Error",
 				)
-
-

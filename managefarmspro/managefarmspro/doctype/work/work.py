@@ -7,26 +7,26 @@
 # class Work(Document):
 #     def on_submit(self):
 #         self.update_plot_totals()
-        
+
 #     def on_cancel(self):
 #         self.update_plot_totals()
-        
+
 #     def update_plot_totals(self):
 #         if self.plot:
 #             # Get total spent from submitted works
 #             plot_total = frappe.db.sql("""
-#                 SELECT SUM(total_cost) 
-#                 FROM `tabWork` 
-#                 WHERE plot = %s 
+#                 SELECT SUM(total_cost)
+#                 FROM `tabWork`
+#                 WHERE plot = %s
 #                 AND docstatus = 1
 #             """, self.plot)[0][0] or 0
-            
+
 #             # Get plot document to access monthly budget
 #             plot_doc = frappe.get_doc('Plot', self.plot)
-            
+
 #             # Calculate maintenance balance
 #             maintenance_balance = (plot_doc.monthly_maintenance_budget or 0) - plot_total
-            
+
 #             # Update both fields
 #             frappe.db.set_value('Plot', self.plot, {
 #                 'total_amount_spent': plot_total,
@@ -45,33 +45,33 @@
 #             plot_doc = frappe.get_doc('Plot', self.plot)
 #             self.monthly_maintenance_budget = plot_doc.monthly_maintenance_budget
 #             self.maintenance_balance = plot_doc.maintenance_balance
-    
+
 #     def on_submit(self):
 #         self.update_plot_totals()
-        
+
 #     def on_cancel(self):
 #         self.update_plot_totals()
-        
+
 #     def update_plot_totals(self):
 #         if self.plot:
 #             plot_doc = frappe.get_doc('Plot', self.plot)
 #             current_date = getdate()
 #             month_start = get_first_day(current_date)
 #             month_end = get_last_day(current_date)
-            
+
 #             # Get total spent from submitted works for current month only
 #             # Changed posting_date to work_date to match the actual field name
 #             plot_total = frappe.db.sql("""
-#                 SELECT SUM(total_cost) 
-#                 FROM tabWork 
-#                 WHERE plot = %s 
+#                 SELECT SUM(total_cost)
+#                 FROM tabWork
+#                 WHERE plot = %s
 #                 AND docstatus = 1
 #                 AND work_date BETWEEN %s AND %s
 #             """, (self.plot, month_start, month_end))[0][0] or 0
-            
+
 #             # Get the last maintenance reset date
 #             last_reset_date = plot_doc.get('last_maintenance_reset') or month_start
-            
+
 #             # If we're in a new month, reset the maintenance balance
 #             if getdate(last_reset_date) < month_start:
 #                 maintenance_balance = plot_doc.monthly_maintenance_budget
@@ -79,7 +79,7 @@
 #                 frappe.db.set_value('Plot', self.plot, 'last_maintenance_reset', month_start)
 #             else:
 #                 maintenance_balance = plot_doc.monthly_maintenance_budget - plot_total
-            
+
 #             # Update Plot document fields
 #             frappe.db.set_value('Plot', self.plot, {
 #                 'total_amount_spent': plot_total,
@@ -90,73 +90,81 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import get_first_day, get_last_day, getdate
 
+
 class Work(Document):
-    def validate(self):
-        if self.plot:
-            plot_doc = frappe.get_doc('Plot', self.plot)
-            
-            # Only proceed with maintenance checks if plot has budget
-            if plot_doc.monthly_maintenance_budget:
-                # First ensure the plot is up to date with any monthly resets
-                plot_doc.check_monthly_reset()
-                plot_doc.save()
-                
-                # Now get the current values
-                self.monthly_maintenance_budget = plot_doc.monthly_maintenance_budget
-                self.maintenance_balance = plot_doc.maintenance_balance
-    
-    def on_submit(self):
-        self.update_plot_totals()
-        
-    def on_cancel(self):
-        self.update_plot_totals()
-        
-    def update_plot_totals(self):
-        if self.plot:
-            plot_doc = frappe.get_doc('Plot', self.plot)
-            
-            # Skip if no maintenance budget is set
-            if not plot_doc.monthly_maintenance_budget:
-                return
-                
-            current_date = getdate()
-            month_start = get_first_day(current_date)
-            month_end = get_last_day(current_date)
-            
-            # Get total spent from submitted works for current month only
-            plot_total = frappe.db.sql("""
+	def validate(self):
+		if self.plot:
+			plot_doc = frappe.get_doc("Plot", self.plot)
+
+			# Only proceed with maintenance checks if plot has budget
+			if plot_doc.monthly_maintenance_budget:
+				# First ensure the plot is up to date with any monthly resets
+				plot_doc.check_monthly_reset()
+				plot_doc.save()
+
+				# Now get the current values
+				self.monthly_maintenance_budget = plot_doc.monthly_maintenance_budget
+				self.maintenance_balance = plot_doc.maintenance_balance
+
+	def on_submit(self):
+		self.update_plot_totals()
+
+	def on_cancel(self):
+		self.update_plot_totals()
+
+	def update_plot_totals(self):
+		if self.plot:
+			plot_doc = frappe.get_doc("Plot", self.plot)
+
+			# Skip if no maintenance budget is set
+			if not plot_doc.monthly_maintenance_budget:
+				return
+
+			current_date = getdate()
+			month_start = get_first_day(current_date)
+			month_end = get_last_day(current_date)
+
+			# Get total spent from submitted works for current month only
+			plot_total = frappe.db.sql(
+				"""
                 SELECT COALESCE(SUM(total_cost), 0)
-                FROM tabWork 
-                WHERE plot = %s 
+                FROM tabWork
+                WHERE plot = %s
                 AND docstatus = 1
                 AND work_date BETWEEN %s AND %s
-            """, (self.plot, month_start, month_end))[0][0]
-            
-            # Update Plot document fields
-            frappe.db.set_value('Plot', self.plot, {
-                'total_amount_spent': plot_total,
-                'maintenance_balance': plot_doc.monthly_maintenance_budget - plot_total
-            }, update_modified=False)
+            """,
+				(self.plot, month_start, month_end),
+			)[0][0]
+
+			# Update Plot document fields
+			frappe.db.set_value(
+				"Plot",
+				self.plot,
+				{
+					"total_amount_spent": plot_total,
+					"maintenance_balance": plot_doc.monthly_maintenance_budget - plot_total,
+				},
+				update_modified=False,
+			)
+
 
 @frappe.whitelist()
 def get_plot_balances(plot):
-    """Get the current maintenance budget and balance for a plot"""
-    plot_doc = frappe.get_doc("Plot", plot)
-    
-    # Only check monthly reset if maintenance budget exists
-    if plot_doc.monthly_maintenance_budget:
-        plot_doc.check_monthly_reset()
-        plot_doc.save()
-        
-        return {
-            "monthly_maintenance_budget": plot_doc.monthly_maintenance_budget,
-            "maintenance_balance": plot_doc.maintenance_balance
-        }
-    else:
-        return {
-            "monthly_maintenance_budget": 0,
-            "maintenance_balance": 0
-        }
+	"""Get the current maintenance budget and balance for a plot"""
+	plot_doc = frappe.get_doc("Plot", plot)
+
+	# Only check monthly reset if maintenance budget exists
+	if plot_doc.monthly_maintenance_budget:
+		plot_doc.check_monthly_reset()
+		plot_doc.save()
+
+		return {
+			"monthly_maintenance_budget": plot_doc.monthly_maintenance_budget,
+			"maintenance_balance": plot_doc.maintenance_balance,
+		}
+	else:
+		return {"monthly_maintenance_budget": 0, "maintenance_balance": 0}
+
 
 # Function to calculate total cost based on child tables
 def calculate_total_cost(doc, method):
