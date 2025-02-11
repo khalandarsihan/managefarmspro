@@ -5,6 +5,7 @@
     "doctype": "Report",
     "idx": 0,
     "is_standard": "Yes",
+    "json": "{\"filters\":[[\"Plot\",\"maintenance_balance_threshold\",\"Currency\",\"Maintenance Balance Below\",1,500],[\"Plot\",\"cluster\",\"Link\",\"Cluster\",0,\"\",\"Cluster\"],[\"Plot\",\"plot_status\",\"Select\",\"Plot Status\",0,\"\",\"Active\\nInactive\\nUnder Maintenance\\nUnder Development\"]]}",
     "letterhead": null,
     "modified": "2025-02-10 13:20:11.081606",
     "modified_by": "Administrator",
@@ -47,31 +48,6 @@
     "timeout": 0,
     "add_total_row": 0,
     "is_query_report": true,
-    "filters": [
-     {
-      "fieldname": "maintenance_balance",
-      "fieldtype": "Currency",
-      "label": "Maintenance Balance",
-      "mandatory": 1,
-      "default": "500",
-      "options": "<=",
-      "width": 100
-     },
-     {
-      "fieldname": "cluster",
-      "fieldtype": "Link",
-      "label": "Cluster",
-      "options": "Cluster",
-      "width": 100
-     },
-     {
-      "fieldname": "plot_status",
-      "fieldtype": "Select",
-      "label": "Plot Status",
-      "options": "\nActive\nInactive\nUnder Maintenance\nUnder Development",
-      "width": 100
-     }
-    ],
     "columns": [
      {
       "fieldname": "plot_name",
