@@ -1,91 +1,3 @@
-# import frappe
-# from frappe.model.document import Document
-# from frappe.utils import add_days
-# from frappe.utils.file_manager import save_file
-
-
-# class Work(Document):
-#     def on_submit(self):
-#         self.update_plot_totals()
-
-#     def on_cancel(self):
-#         self.update_plot_totals()
-
-#     def update_plot_totals(self):
-#         if self.plot:
-#             # Get total spent from submitted works
-#             plot_total = frappe.db.sql("""
-#                 SELECT SUM(total_cost)
-#                 FROM `tabWork`
-#                 WHERE plot = %s
-#                 AND docstatus = 1
-#             """, self.plot)[0][0] or 0
-
-#             # Get plot document to access monthly budget
-#             plot_doc = frappe.get_doc('Plot', self.plot)
-
-#             # Calculate maintenance balance
-#             maintenance_balance = (plot_doc.monthly_maintenance_budget or 0) - plot_total
-
-#             # Update both fields
-#             frappe.db.set_value('Plot', self.plot, {
-#                 'total_amount_spent': plot_total,
-#                 'maintenance_balance': maintenance_balance
-#             }, update_modified=False)
-
-# import frappe
-# from frappe.model.document import Document
-# from frappe.utils import add_days, get_first_day, get_last_day, getdate
-# from frappe.utils.file_manager import save_file
-
-# class Work(Document):
-#     def validate(self):
-#         if self.plot:
-#             # Fetch current values from Plot
-#             plot_doc = frappe.get_doc('Plot', self.plot)
-#             self.monthly_maintenance_budget = plot_doc.monthly_maintenance_budget
-#             self.maintenance_balance = plot_doc.maintenance_balance
-
-#     def on_submit(self):
-#         self.update_plot_totals()
-
-#     def on_cancel(self):
-#         self.update_plot_totals()
-
-#     def update_plot_totals(self):
-#         if self.plot:
-#             plot_doc = frappe.get_doc('Plot', self.plot)
-#             current_date = getdate()
-#             month_start = get_first_day(current_date)
-#             month_end = get_last_day(current_date)
-
-#             # Get total spent from submitted works for current month only
-#             # Changed posting_date to work_date to match the actual field name
-#             plot_total = frappe.db.sql("""
-#                 SELECT SUM(total_cost)
-#                 FROM tabWork
-#                 WHERE plot = %s
-#                 AND docstatus = 1
-#                 AND work_date BETWEEN %s AND %s
-#             """, (self.plot, month_start, month_end))[0][0] or 0
-
-#             # Get the last maintenance reset date
-#             last_reset_date = plot_doc.get('last_maintenance_reset') or month_start
-
-#             # If we're in a new month, reset the maintenance balance
-#             if getdate(last_reset_date) < month_start:
-#                 maintenance_balance = plot_doc.monthly_maintenance_budget
-#                 # Update the last reset date
-#                 frappe.db.set_value('Plot', self.plot, 'last_maintenance_reset', month_start)
-#             else:
-#                 maintenance_balance = plot_doc.monthly_maintenance_budget - plot_total
-
-#             # Update Plot document fields
-#             frappe.db.set_value('Plot', self.plot, {
-#                 'total_amount_spent': plot_total,
-#                 'maintenance_balance': maintenance_balance
-#             }, update_modified=False)
-
 import frappe
 from frappe.model.document import Document
 from frappe.utils import get_first_day, get_last_day, getdate
@@ -112,40 +24,53 @@ class Work(Document):
 	def on_cancel(self):
 		self.update_plot_totals()
 
+	 
 	def update_plot_totals(self):
 		if self.plot:
 			plot_doc = frappe.get_doc("Plot", self.plot)
-
-			# Skip if no maintenance budget is set
-			if not plot_doc.monthly_maintenance_budget:
-				return
-
-			current_date = getdate()
-			month_start = get_first_day(current_date)
-			month_end = get_last_day(current_date)
-
-			# Get total spent from submitted works for current month only
-			plot_total = frappe.db.sql(
-				"""
-                SELECT COALESCE(SUM(total_cost), 0)
-                FROM tabWork
-                WHERE plot = %s
-                AND docstatus = 1
-                AND work_date BETWEEN %s AND %s
-            """,
-				(self.plot, month_start, month_end),
-			)[0][0]
-
-			# Update Plot document fields
-			frappe.db.set_value(
-				"Plot",
-				self.plot,
-				{
-					"total_amount_spent": plot_total,
-					"maintenance_balance": plot_doc.monthly_maintenance_budget - plot_total,
-				},
-				update_modified=False,
-			)
+		
+		# Skip if no maintenance budget is set
+		if not plot_doc.monthly_maintenance_budget:
+			return
+			
+		current_date = getdate()
+		month_start = get_first_day(current_date)
+		month_end = get_last_day(current_date)
+		
+		# Get total spent from submitted works for current month only
+		plot_total = frappe.db.sql(
+			"""
+			SELECT COALESCE(SUM(total_cost), 0)
+			FROM tabWork 
+			WHERE plot = %s 
+			AND docstatus = 1 
+			AND work_date BETWEEN %s AND %s
+			""",
+			(self.plot, month_start, month_end),
+		)[0][0]
+		
+		# Update Plot document fields
+		frappe.db.set_value(
+			"Plot",
+			self.plot,
+			{
+				"total_amount_spent": plot_total,
+				"maintenance_balance": plot_doc.monthly_maintenance_budget - plot_total,
+			},
+			update_modified=False,
+		)
+		
+		# Publish realtime update
+		frappe.publish_realtime(
+			'plot_updated',
+			{
+				'plot_name': self.plot,
+				'total_amount_spent': plot_total,
+				'maintenance_balance': plot_doc.monthly_maintenance_budget - plot_total
+			}
+		)
+   
+			
 
 
 @frappe.whitelist()
@@ -193,80 +118,3 @@ def update_work_child(doc, method):
 		frappe.db.set_value("Work Child", {"parent": doc.plot, "work_id": doc.name}, work_child_data)
 	else:
 		frappe.get_doc({"doctype": "Work Child", **work_child_data}).insert()
-
-
-# Create a Sales Invoice from the Work Doctype
-# def create_sales_invoice(doc, method=None):
-#     invoice = frappe.new_doc("Sales Invoice")
-#     invoice.customer = doc.customer
-#     invoice.company = frappe.defaults.get_global_default("company")
-#     invoice.due_date = add_days(invoice.posting_date, 30)
-
-#     invoice.extend(
-#         "items",
-#         [
-#             {
-#                 "item_code": labor.labor_name,
-#                 "qty": labor.number_of_labor_units,
-#                 "rate": labor.unit_price,
-#                 "amount": labor.total_price,
-#                 "uom": labor.labor_unit
-#             }
-#             for labor in (doc.labor_table or [])
-#         ] + [
-#             {
-#                 "item_code": equipment.item_name,
-#                 "qty": equipment.number_of_equipment_units,
-#                 "rate": equipment.unit_price,
-#                 "amount": equipment.total_price,
-#                 "uom": equipment.equipment_unit
-#             }
-#             for equipment in (doc.equipment_table or [])
-#         ] + [
-#             {
-#                 "item_code": material.material_name,
-#                 "qty": material.number_of_material_units,
-#                 "rate": material.unit_price,
-#                 "amount": material.total_price,
-#                 "uom": material.material_unit
-#             }
-#             for material in (doc.material_table or [])
-#         ]
-#     )
-
-#     invoice.plot = doc.plot
-#     invoice.work_id = doc.name
-#     invoice.insert(ignore_permissions=True)
-#     invoice.submit()
-#     doc.db_set("linked_invoice", invoice.name, update_modified=False)
-
-# # Enqueue PDF Generation as a Background Job
-# @frappe.whitelist()
-# def generate_pdf(doc_name):
-#     doc = frappe.get_doc("Work", doc_name)
-#     if not doc.linked_invoice:
-#         frappe.throw("Linked invoice not found. Cannot generate PDF.")
-
-#     invoice = frappe.get_doc("Sales Invoice", doc.linked_invoice)
-
-#     try:
-#         # Generate the PDF and save it
-#         pdf_data = frappe.get_print("Sales Invoice", invoice.name, print_format="New SI-3", as_pdf=True)
-#         pdf_file = save_file(f"{invoice.name}.pdf", pdf_data, "Sales Invoice", invoice.name, is_private=0)
-
-#         # Link the PDF back to the Work document
-#         doc.db_set("invoice_pdf_link", pdf_file.file_url)
-
-#         # Trigger a real-time update to notify the client
-#         frappe.publish_realtime("pdf_generated", {"pdf_url": pdf_file.file_url, "doc_name": doc.name})
-#         frappe.logger().info(f"PDF for Sales Invoice {invoice.name} generated successfully at {pdf_file.file_url}")
-#     except Exception as e:
-#         frappe.throw(f"Failed to generate PDF: {str(e)}")
-#         frappe.log_error(f"Failed to generate PDF: {str(e)}", "PDF Generation Error")
-
-
-# # Hooked method for submitting the Work document
-# def on_submit(doc, method=None):
-#     create_sales_invoice(doc)
-#     # Enqueue PDF generation in the background
-#     frappe.enqueue('managefarmspro.managefarmspro.doctype.work.work.generate_pdf', doc_name=doc.name)

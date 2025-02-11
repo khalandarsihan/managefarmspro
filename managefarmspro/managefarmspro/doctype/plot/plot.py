@@ -4,10 +4,39 @@ from frappe.utils import get_first_day, get_last_day, getdate
 
 
 class Plot(Document):
+	def onload(self):
+		"""Updates total_amount_spent on form load for the current month"""
+		self.update_current_month_spending()
+	
+	def update_current_month_spending(self):
+		current_date = getdate()
+		month_start = get_first_day(current_date)
+		month_end = get_last_day(current_date)
+
+		# Get total spent from submitted works for current month
+		total_spent = frappe.db.sql("""
+			SELECT COALESCE(SUM(total_cost), 0)
+			FROM tabWork
+			WHERE plot = %s
+			AND docstatus = 1
+			AND work_date BETWEEN %s AND %s
+		""", (self.name, month_start, month_end))[0][0]
+
+		# Update the total_amount_spent
+		self.db_set('total_amount_spent', total_spent, update_modified=False)
+		
+		# If monthly maintenance budget exists, update the maintenance balance
+		if self.monthly_maintenance_budget:
+			self.db_set('maintenance_balance', 
+					self.monthly_maintenance_budget - total_spent,
+					update_modified=False)
+   
 	def validate(self):
 		# Sync maintenance_balance when monthly_maintenance_budget changes
 		if self.has_value_changed("monthly_maintenance_budget"):
 			self.maintenance_balance = self.monthly_maintenance_budget
+ 
+
 
 		# Only proceed with maintenance checks if budget is set
 		if self.monthly_maintenance_budget:
@@ -74,38 +103,6 @@ class Plot(Document):
 				"Remove from Old Cluster Error",
 			)
 
-	# def update_owner_plot_list(self):
-	# 	# Update the list of plots for the corresponding Owner
-	# 	owner_name = self.owner_name
-	# 	if owner_name:
-	# 		try:
-	# 			owner_doc = frappe.get_doc("Owner", owner_name)
-	# 			exists = False
-	# 			for plot in owner_doc.plot_list:
-	# 				if plot.plot == self.name:
-	# 					plot.plot_name = self.plot_name
-	# 					plot.plot_area = self.area
-	# 					plot.plot_cluster = self.cluster
-	# 					exists = True
-	# 					break
-
-	# 			if not exists:
-	# 				owner_doc.append(
-	# 					"plot_list",
-	# 					{
-	# 						"plot": self.name,
-	# 						"plot_name": self.plot_name,
-	# 						"plot_area": self.area,
-	# 						"cluster": self.cluster,
-	# 					},
-	# 				)
-	# 			owner_doc.save()
-
-	# 		except frappe.DoesNotExistError:
-	# 			frappe.log_error(
-	# 				f"Owner {owner_name} not found while creating/updating Plot {self.name}",
-	# 				"Populate Plot List Error",
-	# 			)
 
 	def update_customer_plot_list(self):
 		# Update the list of plots for the corresponding Customer
