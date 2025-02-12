@@ -10,9 +10,9 @@ def execute(filters=None):
 	if not filters:
 		filters = {}
 
-	# Set default maintenance balance if not provided
-	if "maintenance_balance" not in filters:
-		filters["maintenance_balance"] = 500
+	# Set default maintenance balance threshold if not provided
+	if "maintenance_balance_threshold" not in filters:
+		filters["maintenance_balance_threshold"] = 500
 
 	columns = get_columns()
 	data = get_data(filters)
@@ -21,7 +21,7 @@ def execute(filters=None):
 
 def get_columns():
 	return [
-		{"fieldname": "plot_name", "label": _("Plot Name"), "fieldtype": "Data", "width": 200},
+		{"fieldname": "plot_name", "label": _("Plot Name"), "fieldtype": "Data", "width": 150},
 		{
 			"fieldname": "customer_name",
 			"label": _("Customer"),
@@ -41,7 +41,7 @@ def get_columns():
 			"fieldname": "monthly_maintenance_budget",
 			"label": _("Monthly Budget"),
 			"fieldtype": "Currency",
-			"width": 150,
+			"width": 120,
 		},
 		{
 			"fieldname": "total_amount_spent",
@@ -56,15 +56,9 @@ def get_columns():
 def get_data(filters):
 	conditions = ["monthly_maintenance_budget > 0"]  # Base condition to filter out zero budgets
 
-	# Add maintenance balance condition
-	if filters.get("maintenance_balance"):
-		conditions.append("maintenance_balance <= %(maintenance_balance)s")
-
-	if filters.get("cluster"):
-		conditions.append("cluster = %(cluster)s")
-
-	if filters.get("plot_status"):
-		conditions.append("plot_status = %(plot_status)s")
+	# Add maintenance balance threshold condition
+	threshold = filters.get("maintenance_balance_threshold", 500)
+	conditions.append(f"maintenance_balance <= {threshold}")
 
 	where_clause = " WHERE " + " AND ".join(conditions)
 

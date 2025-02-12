@@ -2,5 +2,13 @@
 // For license information, please see license.txt
 
 frappe.query_reports["Low Balance Plots"] = {
-	filters: [],
+	filters: [
+		{
+			fieldname: "maintenance_balance_threshold",
+			label: __("Balance"),
+			fieldtype: "Currency",
+			default: 500,
+			reqd: 1,
+		},
+	],
 };
