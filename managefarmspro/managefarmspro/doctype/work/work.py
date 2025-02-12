@@ -24,31 +24,30 @@ class Work(Document):
 	def on_cancel(self):
 		self.update_plot_totals()
 
-	 
 	def update_plot_totals(self):
 		if self.plot:
 			plot_doc = frappe.get_doc("Plot", self.plot)
-		
+
 		# Skip if no maintenance budget is set
 		if not plot_doc.monthly_maintenance_budget:
 			return
-			
+
 		current_date = getdate()
 		month_start = get_first_day(current_date)
 		month_end = get_last_day(current_date)
-		
+
 		# Get total spent from submitted works for current month only
 		plot_total = frappe.db.sql(
 			"""
 			SELECT COALESCE(SUM(total_cost), 0)
-			FROM tabWork 
-			WHERE plot = %s 
-			AND docstatus = 1 
+			FROM tabWork
+			WHERE plot = %s
+			AND docstatus = 1
 			AND work_date BETWEEN %s AND %s
 			""",
 			(self.plot, month_start, month_end),
 		)[0][0]
-		
+
 		# Update Plot document fields
 		frappe.db.set_value(
 			"Plot",
@@ -59,18 +58,16 @@ class Work(Document):
 			},
 			update_modified=False,
 		)
-		
+
 		# Publish realtime update
 		frappe.publish_realtime(
-			'plot_updated',
+			"plot_updated",
 			{
-				'plot_name': self.plot,
-				'total_amount_spent': plot_total,
-				'maintenance_balance': plot_doc.monthly_maintenance_budget - plot_total
-			}
+				"plot_name": self.plot,
+				"total_amount_spent": plot_total,
+				"maintenance_balance": plot_doc.monthly_maintenance_budget - plot_total,
+			},
 		)
-   
-			
 
 
 @frappe.whitelist()

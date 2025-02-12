@@ -7,36 +7,37 @@ class Plot(Document):
 	def onload(self):
 		"""Updates total_amount_spent on form load for the current month"""
 		self.update_current_month_spending()
-	
+
 	def update_current_month_spending(self):
 		current_date = getdate()
 		month_start = get_first_day(current_date)
 		month_end = get_last_day(current_date)
 
 		# Get total spent from submitted works for current month
-		total_spent = frappe.db.sql("""
+		total_spent = frappe.db.sql(
+			"""
 			SELECT COALESCE(SUM(total_cost), 0)
 			FROM tabWork
 			WHERE plot = %s
 			AND docstatus = 1
 			AND work_date BETWEEN %s AND %s
-		""", (self.name, month_start, month_end))[0][0]
+		""",
+			(self.name, month_start, month_end),
+		)[0][0]
 
 		# Update the total_amount_spent
-		self.db_set('total_amount_spent', total_spent, update_modified=False)
-		
+		self.db_set("total_amount_spent", total_spent, update_modified=False)
+
 		# If monthly maintenance budget exists, update the maintenance balance
 		if self.monthly_maintenance_budget:
-			self.db_set('maintenance_balance', 
-					self.monthly_maintenance_budget - total_spent,
-					update_modified=False)
-   
+			self.db_set(
+				"maintenance_balance", self.monthly_maintenance_budget - total_spent, update_modified=False
+			)
+
 	def validate(self):
 		# Sync maintenance_balance when monthly_maintenance_budget changes
 		if self.has_value_changed("monthly_maintenance_budget"):
 			self.maintenance_balance = self.monthly_maintenance_budget
- 
-
 
 		# Only proceed with maintenance checks if budget is set
 		if self.monthly_maintenance_budget:
@@ -102,7 +103,6 @@ class Plot(Document):
 				f"Previous Cluster {previous_cluster_name} not found for Plot {self.name}",
 				"Remove from Old Cluster Error",
 			)
-
 
 	def update_customer_plot_list(self):
 		# Update the list of plots for the corresponding Customer
