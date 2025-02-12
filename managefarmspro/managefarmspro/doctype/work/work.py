@@ -59,7 +59,7 @@ class Work(Document):
 			update_modified=False,
 		)
 
-		# Publish realtime update
+		# Publish realtime update with specific doctype and docname
 		frappe.publish_realtime(
 			"plot_updated",
 			{
@@ -67,6 +67,9 @@ class Work(Document):
 				"total_amount_spent": plot_total,
 				"maintenance_balance": plot_doc.monthly_maintenance_budget - plot_total,
 			},
+			doctype="Plot",  # Specify the doctype
+			docname=self.plot,  # Specify the specific document
+			after_commit=True,  # Ensure the transaction is committed
 		)
 
 
