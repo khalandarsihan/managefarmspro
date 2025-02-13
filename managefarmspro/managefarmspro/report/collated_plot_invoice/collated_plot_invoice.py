@@ -299,172 +299,179 @@ def get_data(filters):
 
 # 	return full_url
 
+
 @frappe.whitelist()
 def download_invoice_pdf(filters):
-    """
-    Generate a consolidated Sales Invoice PDF, link the invoice number to each work entry,
-    and create a Sales Invoice entry in Frappe.
-    """
-    if isinstance(filters, str):
-        filters = json.loads(filters)
+	"""
+	Generate a consolidated Sales Invoice PDF, link the invoice number to each work entry,
+	and create a Sales Invoice entry in Frappe.
+	"""
+	if isinstance(filters, str):
+		filters = json.loads(filters)
 
-    invoices, grand_total, supervision_charge = get_data(filters)
-    if not invoices:
-        frappe.throw(_("No new work entries found for generating the invoice."))
+	invoices, grand_total, supervision_charge = get_data(filters)
+	if not invoices:
+		frappe.throw(_("No new work entries found for generating the invoice."))
 
-    final_grand_total = grand_total + supervision_charge
+	final_grand_total = grand_total + supervision_charge
 
-    customer = invoices[0].get("customer", None)
-    plot_name = invoices[0].get("plot", _("N/A"))
+	customer = invoices[0].get("customer", None)
+	plot_name = invoices[0].get("plot", _("N/A"))
 
-    if not customer or not frappe.db.exists("Customer", customer):
-        frappe.throw(_("Customer not found for this plot. Please ensure a valid customer is assigned."))
+	if not customer or not frappe.db.exists("Customer", customer):
+		frappe.throw(_("Customer not found for this plot. Please ensure a valid customer is assigned."))
 
-    company = "Philosan Farm Management"
-    income_account = frappe.db.get_value("Company", company, "default_income_account")
-    if not income_account:
-        frappe.throw(_("Please set a default income account for the company {0}.").format(company))
+	company = "Philosan Farm Management"
+	income_account = frappe.db.get_value("Company", company, "default_income_account")
+	if not income_account:
+		frappe.throw(_("Please set a default income account for the company {0}.").format(company))
 
-    supervision_charge_account = "Service - PFM"
+	supervision_charge_account = "Service - PFM"
 
-    # Create a new Sales Invoice with stock update enabled
-    sales_invoice = frappe.get_doc({
-        "doctype": "Sales Invoice",
-        "customer": customer,
-        "company": company,
-        "plot": plot_name,
-        "posting_date": filters.get("end_date"),
-        "due_date": add_days(filters.get("end_date"), 30),
-        "update_stock": 1,
-        "set_warehouse": "Main Warehouse - PFM",
-        "cost_center": "Main - PFM",
-        "items": [],
-        "set_posting_time": 1,
-    })
+	# Create a new Sales Invoice with stock update enabled
+	sales_invoice = frappe.get_doc(
+		{
+			"doctype": "Sales Invoice",
+			"customer": customer,
+			"company": company,
+			"plot": plot_name,
+			"posting_date": filters.get("end_date"),
+			"due_date": add_days(filters.get("end_date"), 30),
+			"update_stock": 1,
+			"set_warehouse": "Main Warehouse - PFM",
+			"cost_center": "Main - PFM",
+			"items": [],
+			"set_posting_time": 1,
+		}
+	)
 
-    for invoice in invoices:
-        item_name = invoice.get("work_name")
-        invoice_item = {
-            "item_name": item_name,
-            "description": invoice.get("description"),
-            "qty": 1,
-            "rate": invoice.get("total_cost"),
-            "amount": invoice.get("total_cost"),
-            "linked_work_entry": invoice.get("work_id"),
-            "income_account": income_account,
-            "warehouse": "Main Warehouse - PFM",
-            "expense_account": "Cost of Goods Sold - PFM",
-            "plot": plot_name,
-            "work_id": invoice.get("work_id"),
-        }
-        sales_invoice.append("items", invoice_item)
+	for invoice in invoices:
+		item_name = invoice.get("work_name")
+		invoice_item = {
+			"item_name": item_name,
+			"description": invoice.get("description"),
+			"qty": 1,
+			"rate": invoice.get("total_cost"),
+			"amount": invoice.get("total_cost"),
+			"linked_work_entry": invoice.get("work_id"),
+			"income_account": income_account,
+			"warehouse": "Main Warehouse - PFM",
+			"expense_account": "Cost of Goods Sold - PFM",
+			"plot": plot_name,
+			"work_id": invoice.get("work_id"),
+		}
+		sales_invoice.append("items", invoice_item)
 
-    if supervision_charge > 0:
-        additional_charge_item = {
-            "item_name": _("Supervision Charges"),
-            "description": _("Supervision charges for the services provided."),
-            "qty": 1,
-            "rate": supervision_charge,
-            "amount": supervision_charge,
-            "income_account": supervision_charge_account,
-        }
-        sales_invoice.append("items", additional_charge_item)
+	if supervision_charge > 0:
+		additional_charge_item = {
+			"item_name": _("Supervision Charges"),
+			"description": _("Supervision charges for the services provided."),
+			"qty": 1,
+			"rate": supervision_charge,
+			"amount": supervision_charge,
+			"income_account": supervision_charge_account,
+		}
+		sales_invoice.append("items", additional_charge_item)
 
-    sales_invoice.total = grand_total
-    sales_invoice.total_taxes_and_charges = 0
-    sales_invoice.total_amount = final_grand_total
-    sales_invoice.grand_total = final_grand_total
-    sales_invoice.rounded_total = final_grand_total
-    sales_invoice.outstanding_amount = final_grand_total
+	sales_invoice.total = grand_total
+	sales_invoice.total_taxes_and_charges = 0
+	sales_invoice.total_amount = final_grand_total
+	sales_invoice.grand_total = final_grand_total
+	sales_invoice.rounded_total = final_grand_total
+	sales_invoice.outstanding_amount = final_grand_total
 
-    sales_invoice.insert()
-    sales_invoice.submit()
+	sales_invoice.insert()
+	sales_invoice.submit()
 
-    invoice_number = sales_invoice.name
+	invoice_number = sales_invoice.name
 
-    for invoice in invoices:
-        frappe.db.set_value("Work", invoice["work_id"], "invoice_number", invoice_number)
+	for invoice in invoices:
+		frappe.db.set_value("Work", invoice["work_id"], "invoice_number", invoice_number)
 
-    for invoice in invoices:
-        invoice["invoice_items"] = invoice.pop("items", []) if invoice.get("items") is not None else []
+	for invoice in invoices:
+		invoice["invoice_items"] = invoice.pop("items", []) if invoice.get("items") is not None else []
 
-    context = {
-        "invoices": invoices,
-        "grand_total": grand_total,
-        "supervision_charge": supervision_charge,
-        "final_grand_total": final_grand_total,
-        "filters": filters,
-        "invoice_number": invoice_number,
-        "customer": customer,
-        "plot_name": plot_name,
-    }
+	context = {
+		"invoices": invoices,
+		"grand_total": grand_total,
+		"supervision_charge": supervision_charge,
+		"final_grand_total": final_grand_total,
+		"filters": filters,
+		"invoice_number": invoice_number,
+		"customer": customer,
+		"plot_name": plot_name,
+	}
 
-    html = frappe.render_template("managefarmspro/templates/collated_invoice.html", context)
-    pdf_file = get_pdf(html)
+	html = frappe.render_template("managefarmspro/templates/collated_invoice.html", context)
+	pdf_file = get_pdf(html)
 
-    # Get the request object to access headers
-    request = frappe.request
-    
-    # Get the host from the request headers
-    host = request.headers.get('Host')
-    
-    # Get the scheme (http/https)
-    forwarded_proto = request.headers.get('X-Forwarded-Proto', 'http')
-    
-    # If we're behind a proxy (like nginx), use the original host
-    original_host = request.headers.get('X-Forwarded-Host', host)
-    
-    # Construct the base URL using the actual host that the client used
-    base_url = f"{forwarded_proto}://{original_host}"
+	# Get the request object to access headers
+	request = frappe.request
 
-    # Retrieve the plot ID from the provided filters
-    plot_id = filters.get("plot")
+	# Get the host from the request headers
+	host = request.headers.get("Host")
 
-    # Fetch the plot name from the database using the plot ID
-    plot_name = frappe.db.get_value("Plot", plot_id, "plot_name") or _("N/A")
+	# Get the scheme (http/https)
+	forwarded_proto = request.headers.get("X-Forwarded-Proto", "http")
 
-    # Generate a unique identifier using timestamp + random number
-    timestamp = int(time.time())  # Current timestamp
-    random_number = random.randint(1000, 9999)  # A random number between 1000 and 9999
-    unique_suffix = f"{timestamp}{random_number}"  # Combine them
+	# If we're behind a proxy (like nginx), use the original host
+	original_host = request.headers.get("X-Forwarded-Host", host)
 
-    # Construct the file name using the plot name and unique identifier
-    file_name = f"Invoice_{plot_name}_{filters.get('start_date')}_{filters.get('end_date')}_{unique_suffix}.pdf"
+	# Construct the base URL using the actual host that the client used
+	base_url = f"{forwarded_proto}://{original_host}"
 
-    file_path = f"private/files/{file_name}"
-    full_file_path = frappe.get_site_path(file_path)
+	# Retrieve the plot ID from the provided filters
+	plot_id = filters.get("plot")
 
-    os.makedirs(os.path.dirname(full_file_path), exist_ok=True)
+	# Fetch the plot name from the database using the plot ID
+	plot_name = frappe.db.get_value("Plot", plot_id, "plot_name") or _("N/A")
 
-    with open(full_file_path, "wb") as f:
-        f.write(pdf_file)
+	# Generate a unique identifier using timestamp + random number
+	timestamp = int(time.time())  # Current timestamp
+	random_number = random.randint(1000, 9999)  # A random number between 1000 and 9999
+	unique_suffix = f"{timestamp}{random_number}"  # Combine them
 
-    # Create the File document and link it to the Sales Invoice
-    file_doc = frappe.get_doc({
-        "doctype": "File",
-        "file_name": file_name,
-        "file_url": f"/private/files/{file_name}",  # Save without domain
-        "attached_to_doctype": "Sales Invoice",
-        "attached_to_name": invoice_number,
-        "is_private": 1,
-    })
-    file_doc.insert(ignore_permissions=True)
+	# Construct the file name using the plot name and unique identifier
+	file_name = (
+		f"Invoice_{plot_name}_{filters.get('start_date')}_{filters.get('end_date')}_{unique_suffix}.pdf"
+	)
 
-    # Retrieve the content hash generated by Frappe for the file
-    content_hash = file_doc.content_hash
-    hash_suffix = content_hash[-6:]  # Extract last 6 characters of content hash
+	file_path = f"private/files/{file_name}"
+	full_file_path = frappe.get_site_path(file_path)
 
-    # Update file paths with content hash
-    final_file_path = f"/private/files/Invoice_{plot_name}_{filters.get('start_date')}_{filters.get('end_date')}_{unique_suffix}{hash_suffix}.pdf"
-    
-    # Create the final URL with the correct host
-    final_url = f"{base_url}{final_file_path}"
+	os.makedirs(os.path.dirname(full_file_path), exist_ok=True)
 
-    # Update the Sales Invoice with the file path (not full URL)
-    frappe.db.set_value("Sales Invoice", invoice_number, "pdf_invoice_link", final_file_path)
+	with open(full_file_path, "wb") as f:
+		f.write(pdf_file)
 
-    # Update Work Doctype with the file path
-    for invoice in invoices:
-        frappe.db.set_value("Work", invoice["work_id"], "pdf_invoice_link", final_file_path)
+	# Create the File document and link it to the Sales Invoice
+	file_doc = frappe.get_doc(
+		{
+			"doctype": "File",
+			"file_name": file_name,
+			"file_url": f"/private/files/{file_name}",  # Save without domain
+			"attached_to_doctype": "Sales Invoice",
+			"attached_to_name": invoice_number,
+			"is_private": 1,
+		}
+	)
+	file_doc.insert(ignore_permissions=True)
 
-    return final_url
+	# Retrieve the content hash generated by Frappe for the file
+	content_hash = file_doc.content_hash
+	hash_suffix = content_hash[-6:]  # Extract last 6 characters of content hash
+
+	# Update file paths with content hash
+	final_file_path = f"/private/files/Invoice_{plot_name}_{filters.get('start_date')}_{filters.get('end_date')}_{unique_suffix}{hash_suffix}.pdf"
+
+	# Create the final URL with the correct host
+	final_url = f"{base_url}{final_file_path}"
+
+	# Update the Sales Invoice with the file path (not full URL)
+	frappe.db.set_value("Sales Invoice", invoice_number, "pdf_invoice_link", final_file_path)
+
+	# Update Work Doctype with the file path
+	for invoice in invoices:
+		frappe.db.set_value("Work", invoice["work_id"], "pdf_invoice_link", final_file_path)
+
+	return final_url

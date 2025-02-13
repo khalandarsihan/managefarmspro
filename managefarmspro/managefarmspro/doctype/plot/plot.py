@@ -59,15 +59,16 @@ class Plot(Document):
 
 		current_date = getdate()
 		month_start = get_first_day(current_date)
-
-		# Get the last maintenance reset date
 		last_reset_date = self.get("last_maintenance_reset") or month_start
 
-		# If we're in a new month or this is first time
 		if getdate(last_reset_date) < month_start:
-			self.maintenance_balance = self.monthly_maintenance_budget
-			self.total_amount_spent = 0
-			self.last_maintenance_reset = month_start
+			# First reset values for new month
+			self.db_set("maintenance_balance", self.monthly_maintenance_budget, update_modified=False)
+			self.db_set("total_amount_spent", 0, update_modified=False)
+			self.db_set("last_maintenance_reset", month_start, update_modified=False)
+
+			# Then update with any spending in current month
+			self.update_current_month_spending()
 
 	def before_save(self):
 		# Capture the old cluster value before it's modified during the update

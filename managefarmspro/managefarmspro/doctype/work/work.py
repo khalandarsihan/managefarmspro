@@ -16,7 +16,25 @@ class Work(Document):
 
 				# Now get the current values
 				self.monthly_maintenance_budget = plot_doc.monthly_maintenance_budget
-				self.maintenance_balance = plot_doc.maintenance_balance
+
+				# Calculate total cost including supervision charges
+				current_date = getdate()
+				month_start = get_first_day(current_date)
+				month_end = get_last_day(current_date)
+
+				# Get total spent including supervision charges
+				total_spent = frappe.db.sql(
+					"""
+                    SELECT COALESCE(SUM(total_cost + (total_cost * %s / 100)), 0)
+                    FROM tabWork
+                    WHERE plot = %s
+                    AND docstatus = 1
+                    AND work_date BETWEEN %s AND %s
+                    """,
+					(plot_doc.supervision_charge or 0, self.plot, month_start, month_end),
+				)[0][0]
+
+				self.maintenance_balance = plot_doc.monthly_maintenance_budget - total_spent
 
 	def on_submit(self):
 		self.update_plot_totals()
@@ -28,49 +46,49 @@ class Work(Document):
 		if self.plot:
 			plot_doc = frappe.get_doc("Plot", self.plot)
 
-		# Skip if no maintenance budget is set
-		if not plot_doc.monthly_maintenance_budget:
-			return
+			# Skip if no maintenance budget is set
+			if not plot_doc.monthly_maintenance_budget:
+				return
 
-		current_date = getdate()
-		month_start = get_first_day(current_date)
-		month_end = get_last_day(current_date)
+			current_date = getdate()
+			month_start = get_first_day(current_date)
+			month_end = get_last_day(current_date)
 
-		# Get total spent from submitted works for current month only
-		plot_total = frappe.db.sql(
-			"""
-			SELECT COALESCE(SUM(total_cost), 0)
-			FROM tabWork
-			WHERE plot = %s
-			AND docstatus = 1
-			AND work_date BETWEEN %s AND %s
-			""",
-			(self.plot, month_start, month_end),
-		)[0][0]
+			# Get total spent including supervision charges
+			total_spent = frappe.db.sql(
+				"""
+                SELECT COALESCE(SUM(total_cost + (total_cost * %s / 100)), 0)
+                FROM tabWork
+                WHERE plot = %s
+                AND docstatus = 1
+                AND work_date BETWEEN %s AND %s
+                """,
+				(plot_doc.supervision_charge or 0, self.plot, month_start, month_end),
+			)[0][0]
 
-		# Update Plot document fields
-		frappe.db.set_value(
-			"Plot",
-			self.plot,
-			{
-				"total_amount_spent": plot_total,
-				"maintenance_balance": plot_doc.monthly_maintenance_budget - plot_total,
-			},
-			update_modified=False,
-		)
+			# Update Plot document fields
+			frappe.db.set_value(
+				"Plot",
+				self.plot,
+				{
+					"total_amount_spent": total_spent,
+					"maintenance_balance": plot_doc.monthly_maintenance_budget - total_spent,
+				},
+				update_modified=False,
+			)
 
-		# Publish realtime update with specific doctype and docname
-		frappe.publish_realtime(
-			"plot_updated",
-			{
-				"plot_name": self.plot,
-				"total_amount_spent": plot_total,
-				"maintenance_balance": plot_doc.monthly_maintenance_budget - plot_total,
-			},
-			doctype="Plot",  # Specify the doctype
-			docname=self.plot,  # Specify the specific document
-			after_commit=True,  # Ensure the transaction is committed
-		)
+			# Publish realtime update
+			frappe.publish_realtime(
+				"plot_updated",
+				{
+					"plot_name": self.plot,
+					"total_amount_spent": total_spent,
+					"maintenance_balance": plot_doc.monthly_maintenance_budget - total_spent,
+				},
+				doctype="Plot",
+				docname=self.plot,
+				after_commit=True,
+			)
 
 
 @frappe.whitelist()
@@ -83,9 +101,25 @@ def get_plot_balances(plot):
 		plot_doc.check_monthly_reset()
 		plot_doc.save()
 
+		current_date = getdate()
+		month_start = get_first_day(current_date)
+		month_end = get_last_day(current_date)
+
+		# Get total spent including supervision charges
+		total_spent = frappe.db.sql(
+			"""
+            SELECT COALESCE(SUM(total_cost + (total_cost * %s / 100)), 0)
+            FROM tabWork
+            WHERE plot = %s
+            AND docstatus = 1
+            AND work_date BETWEEN %s AND %s
+            """,
+			(plot_doc.supervision_charge or 0, plot, month_start, month_end),
+		)[0][0]
+
 		return {
 			"monthly_maintenance_budget": plot_doc.monthly_maintenance_budget,
-			"maintenance_balance": plot_doc.maintenance_balance,
+			"maintenance_balance": plot_doc.monthly_maintenance_budget - total_spent,
 		}
 	else:
 		return {"monthly_maintenance_budget": 0, "maintenance_balance": 0}
