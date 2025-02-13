@@ -200,7 +200,7 @@ frappe.ui.form.on("Work", {
 		// Check if this is initial save (not submitted) and total cost exceeds balance
 		if (
 			frm.is_new() &&
-			frm.doc.maintenance_budget > 0 &&
+			frm.doc.monthly_maintenance_budget > 0 &&
 			frm.doc.total_cost > frm.doc.maintenance_balance
 		) {
 			return new Promise((resolve, reject) => {
@@ -247,6 +247,69 @@ frappe.ui.form.on("Work", {
 			updateItemNamesWithCount(frm, "labor_table", "item_display_name", "labor_count");
 		}
 	},
+
+	// before_save: function (frm) {
+	// 	// Calculate the final total cost
+	// 	calculateTotalCost(frm);
+
+	// 	// Add debug logs
+	// 	console.log("Is New:", frm.is_new());
+	// 	console.log("Maintenance Budget:", frm.doc.maintenance_budget);
+	// 	console.log("Total Cost:", frm.doc.total_cost);
+	// 	console.log("Maintenance Balance:", frm.doc.maintenance_balance);
+
+	// 	// Check if this is initial save (not submitted) and total cost exceeds balance
+	// 	if (
+	// 		frm.is_new() &&
+	// 		frm.doc.maintenance_budget > 0 &&
+	// 		frm.doc.total_cost > frm.doc.maintenance_balance
+	// 	) {
+	// 		console.log("Alert condition met!");
+	// 		return new Promise((resolve, reject) => {
+	// 			frappe.confirm(
+	// 				"This work amount <strong>exceeds the Maintenance balance</strong> Do you still want to save this work?",
+	// 				() => {
+	// 					// If user clicks "Yes"
+	// 					// Update item names with count if applicable
+	// 					updateItemNamesWithCount(
+	// 						frm,
+	// 						"equipment_table",
+	// 						"item_display_name",
+	// 						"equipment_count"
+	// 					);
+	// 					updateItemNamesWithCount(
+	// 						frm,
+	// 						"material_table",
+	// 						"item_display_name",
+	// 						"material_count"
+	// 					);
+	// 					updateItemNamesWithCount(
+	// 						frm,
+	// 						"labor_table",
+	// 						"item_display_name",
+	// 						"labor_count"
+	// 					);
+	// 					resolve();
+	// 				},
+	// 				() => {
+	// 					// If user clicks "No"
+	// 					reject();
+	// 				}
+	// 			);
+	// 		});
+	// 	} else {
+	// 		console.log("Alert condition NOT met");
+	// 		// If total cost doesn't exceed balance or not initial save, just update the item names
+	// 		updateItemNamesWithCount(
+	// 			frm,
+	// 			"equipment_table",
+	// 			"item_display_name",
+	// 			"equipment_count"
+	// 		);
+	// 		updateItemNamesWithCount(frm, "material_table", "item_display_name", "material_count");
+	// 		updateItemNamesWithCount(frm, "labor_table", "item_display_name", "labor_count");
+	// 	}
+	// },
 });
 
 // [All helper functions remain exactly the same]
