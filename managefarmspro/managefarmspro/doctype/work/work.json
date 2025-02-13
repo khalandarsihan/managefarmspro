@@ -10,6 +10,7 @@
   "plot",
   "monthly_maintenance_budget",
   "maintenance_balance",
+  "supervision_charges",
   "work_type_name",
   "work_date",
   "customer",
@@ -265,12 +266,20 @@
    "fieldtype": "Currency",
    "label": "Monthly Maintenance Budget",
    "read_only": 1
+  },
+  {
+   "fetch_from": "plot.supervision_charge",
+   "fieldname": "supervision_charges",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Supervision Charges (%)",
+   "precision": "2"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-12 20:23:32.656866",
+ "modified": "2025-02-13 16:14:20.179963",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Work",
