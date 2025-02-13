@@ -14,15 +14,16 @@ class Plot(Document):
 		month_end = get_last_day(current_date)
 
 		# Get total spent from submitted works for current month
+		# Including supervision charge in the calculation
 		total_spent = frappe.db.sql(
 			"""
-			SELECT COALESCE(SUM(total_cost), 0)
+			SELECT COALESCE(SUM(total_cost + (total_cost * %s / 100)), 0)
 			FROM tabWork
 			WHERE plot = %s
 			AND docstatus = 1
 			AND work_date BETWEEN %s AND %s
 		""",
-			(self.name, month_start, month_end),
+			(self.supervision_charge or 0, self.name, month_start, month_end),
 		)[0][0]
 
 		# Update the total_amount_spent
