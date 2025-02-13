@@ -253,6 +253,7 @@
   },
   {
    "depends_on": "eval:doc.plot\n",
+   "fetch_from": "plot.maintenance_balance",
    "fieldname": "maintenance_balance",
    "fieldtype": "Currency",
    "label": "Maintenance Balance",
@@ -269,7 +270,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-06 18:08:21.326639",
+ "modified": "2025-02-12 20:23:32.656866",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Work",

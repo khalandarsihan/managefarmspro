@@ -1,21 +1,20 @@
-# Copyright (c) 2025, FigAi GenAi Solutions and contributors
-# For license information, please see license.txt
-
-
 import frappe
 from frappe import _
+from frappe.utils import flt
 
 
 def execute(filters=None):
-	if not filters:
+	if filters is None:
 		filters = {}
 
-	# Set default maintenance balance threshold if not provided
-	if "maintenance_balance_threshold" not in filters:
-		filters["maintenance_balance_threshold"] = 500
+	threshold = filters.get("maintenance_balance_threshold")
+	if threshold is None:
+		threshold = 500.0
+	else:
+		threshold = round(float(threshold), 2)
 
 	columns = get_columns()
-	data = get_data(filters)
+	data = get_data(threshold)
 	return columns, data
 
 
@@ -53,17 +52,9 @@ def get_columns():
 	]
 
 
-def get_data(filters):
-	conditions = ["monthly_maintenance_budget > 0"]  # Base condition to filter out zero budgets
-
-	# Add maintenance balance threshold condition
-	threshold = filters.get("maintenance_balance_threshold", 500)
-	conditions.append(f"maintenance_balance <= {threshold}")
-
-	where_clause = " WHERE " + " AND ".join(conditions)
-
-	return frappe.db.sql(
-		f"""
+def get_data(threshold):
+	# Updated query to calculate balance correctly
+	query = """
         SELECT
             plot_name,
             customer_name,
@@ -71,11 +62,19 @@ def get_data(filters):
             plot_status,
             monthly_maintenance_budget,
             total_amount_spent,
-            maintenance_balance
+            (monthly_maintenance_budget - IFNULL(total_amount_spent, 0)) as maintenance_balance
         FROM `tabPlot`
-        {where_clause}
+        WHERE monthly_maintenance_budget > 0
+        AND (monthly_maintenance_budget - IFNULL(total_amount_spent, 0)) <= %s
         ORDER BY maintenance_balance ASC, plot_name ASC
-    """,
-		filters,
-		as_dict=1,
-	)
+    """
+
+	result = frappe.db.sql(query, (threshold,), as_dict=1)
+
+	# Ensure proper number formatting
+	for row in result:
+		row.monthly_maintenance_budget = flt(row.monthly_maintenance_budget, 2)
+		row.total_amount_spent = flt(row.total_amount_spent, 2)
+		row.maintenance_balance = flt(row.maintenance_balance, 2)
+
+	return result
