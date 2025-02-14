@@ -8,15 +8,18 @@
  "field_order": [
   "work_information",
   "plot",
+  "monthly_maintenance_budget",
+  "maintenance_balance",
+  "supervision_charges",
   "work_type_name",
   "work_date",
-  "work_photos",
   "customer",
   "invoice_number",
   "column_break_xtng",
   "description",
   "total_cost",
   "linked_invoice",
+  "work_photos",
   "pdf_invoice_link",
   "work_details",
   "labor_required",
@@ -248,12 +251,35 @@
    "hidden": 1,
    "label": "Material Count",
    "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.plot\n",
+   "fetch_from": "plot.maintenance_balance",
+   "fieldname": "maintenance_balance",
+   "fieldtype": "Currency",
+   "label": "Maintenance Balance",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "plot.monthly_maintenance_budget",
+   "fieldname": "monthly_maintenance_budget",
+   "fieldtype": "Currency",
+   "label": "Monthly Maintenance Budget",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "plot.supervision_charge",
+   "fieldname": "supervision_charges",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Supervision Charges (%)",
+   "precision": "2"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-28 16:34:36.236859",
+ "modified": "2025-02-13 16:14:20.179963",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "Work",

@@ -13,7 +13,7 @@
    "label": "Daily Works Count"
   }
  ],
- "content": "[{\"id\":\"oN-4yVuYON\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h1\\\"><b>                  Philosan Farm Management</b></span>\",\"col\":12}},{\"id\":\"W1GQbTVSWT\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customers\",\"col\":3}},{\"id\":\"KgJ-8KRn3I\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Plots\",\"col\":3}},{\"id\":\"MlwaJpyPTF\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Works\",\"col\":3}},{\"id\":\"Zr3Wn1Rtt-\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Generate Invoice\",\"col\":3}},{\"id\":\"fdD2xuXs5o\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Customers\",\"col\":3}},{\"id\":\"urE5XnV80r\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Plots\",\"col\":3}},{\"id\":\"Qygqe0ueFG\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Works\",\"col\":3}},{\"id\":\"etQJMheibv\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Invoiced Amount\",\"col\":3}},{\"id\":\"BigEvAq73H\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Daily Works Count\",\"col\":6}},{\"id\":\"LM9-KUxdpS\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Invoice Status\",\"col\":6}},{\"id\":\"UZ0jeFJQ7h\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Work Type vs Revenue\",\"col\":12}},{\"id\":\"V6DOROpP7i\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Recent Works\",\"col\":6}},{\"id\":\"l30ak0BLzC\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Unpaid Invoices\",\"col\":6}}]",
+ "content": "[{\"id\":\"oN-4yVuYON\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h1\\\"><b>                  Philosan Farm Management</b></span>\",\"col\":12}},{\"id\":\"jvLH3foq78\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Low Balance Plots\",\"col\":3}},{\"id\":\"KgJ-8KRn3I\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Plot\",\"col\":3}},{\"id\":\"MlwaJpyPTF\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Works\",\"col\":3}},{\"id\":\"Zr3Wn1Rtt-\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Generate Invoice\",\"col\":3}},{\"id\":\"P4EISR8Hm9\",\"type\":\"card\",\"data\":{\"card_name\":\"Customer\",\"col\":3}},{\"id\":\"urE5XnV80r\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Plots\",\"col\":3}},{\"id\":\"Qygqe0ueFG\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Works\",\"col\":3}},{\"id\":\"etQJMheibv\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Invoiced Amount\",\"col\":3}},{\"id\":\"BigEvAq73H\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Daily Works Count\",\"col\":6}},{\"id\":\"LM9-KUxdpS\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Invoice Status\",\"col\":6}},{\"id\":\"UZ0jeFJQ7h\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Work Type vs Revenue\",\"col\":12}},{\"id\":\"V6DOROpP7i\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Recent Works\",\"col\":6}},{\"id\":\"l30ak0BLzC\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Unpaid Invoices\",\"col\":6}}]",
  "creation": "2024-08-05 10:52:28.263999",
  "custom_blocks": [],
  "docstatus": 0,
@@ -35,17 +35,32 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer",
+   "link_count": 0,
+   "link_to": "Customer",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-10-28 16:23:14.087696",
+ "modified": "2025-02-10 13:39:47.693697",
  "modified_by": "Administrator",
  "module": "Managefarmspro",
  "name": "ManageFarmsPro",
  "number_cards": [
-  {
-   "label": "Customers",
-   "number_card_name": "Customers"
-  },
   {
    "label": "Plots",
    "number_card_name": "Count Of Plots"
@@ -84,18 +99,17 @@
   {
    "color": "Green",
    "doc_view": "List",
-   "label": "Customers",
-   "link_to": "Customer",
+   "label": "Plot",
+   "link_to": "Plot",
    "stats_filter": "[]",
    "type": "DocType"
   },
   {
-   "color": "Green",
+   "color": "Grey",
    "doc_view": "List",
-   "label": "Plots",
-   "link_to": "Plot",
-   "stats_filter": "[]",
-   "type": "DocType"
+   "label": "Low Balance Plots",
+   "link_to": "Low Balance Plots",
+   "type": "Report"
   },
   {
    "color": "Grey",
