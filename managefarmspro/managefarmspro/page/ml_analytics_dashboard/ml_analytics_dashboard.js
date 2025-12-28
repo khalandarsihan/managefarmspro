@@ -686,7 +686,9 @@ class MLAnalyticsDashboard {
 			const budget = r?.monthly_maintenance_budget || 0;
 			const forecasts = result.forecasts || [];
 			const avgForecast =
-				forecasts.reduce((sum, f) => sum + f.predicted_cost, 0) / forecasts.length;
+				forecasts.length > 0
+					? forecasts.reduce((sum, f) => sum + f.predicted_cost, 0) / forecasts.length
+					: 0;
 			const trend = avgForecast > result.historical_average ? "increasing" : "decreasing";
 
 			let html = `
@@ -733,21 +735,37 @@ class MLAnalyticsDashboard {
 							? `<small class="text-muted mt-2 d-block">${result.note}</small>`
 							: ""
 					}
-                    ${
-						avgForecast > budget
-							? `
-                        <div class="alert alert-warning mt-2 mb-0">
-                            <i class="fa fa-exclamation-triangle"></i>
-                            Budget is appropriately sized for predicted spending (${(
-								(avgForecast / budget) *
-								100
-							).toFixed(0)}%)
-                        </div>
-                    `
-							: ""
-					}
-                </div>
             `;
+
+			// Budget comparison alerts - handle division by zero
+			if (budget <= 0 && avgForecast > 0) {
+				html += `
+                    <div class="alert alert-danger mt-2 mb-0">
+                        <i class="fa fa-exclamation-circle"></i>
+                        <strong>No budget set!</strong> Predicted spending is ₹${this.format_number(
+							avgForecast
+						)}/month. Please set a monthly maintenance budget for this plot.
+                    </div>
+                `;
+			} else if (budget > 0 && avgForecast > budget) {
+				const percentOfBudget = ((avgForecast / budget) * 100).toFixed(0);
+				html += `
+                    <div class="alert alert-warning mt-2 mb-0">
+                        <i class="fa fa-exclamation-triangle"></i>
+                        Predicted spending exceeds budget (${percentOfBudget}% of monthly budget)
+                    </div>
+                `;
+			} else if (budget > 0 && avgForecast > 0) {
+				const percentOfBudget = ((avgForecast / budget) * 100).toFixed(0);
+				html += `
+                    <div class="alert alert-success mt-2 mb-0">
+                        <i class="fa fa-check-circle"></i>
+                        Budget is appropriately sized for predicted spending (${percentOfBudget}% utilization)
+                    </div>
+                `;
+			}
+
+			html += `</div>`;
 
 			$container.html(html);
 		});
