@@ -1,86 +1,146 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
 <div class="ml-analytics-dashboard">
-    <div class="container-fluid">
-        <!-- Model Status Banner -->
-        <div id="model-status-banner" class="mb-4"></div>
-        
-        <!-- Summary Cards -->
-        <div id="summary-cards" class="row mb-4"></div>
-        
-        <!-- Charts Row -->
-        <div class="row mb-4">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Cost Trends (Jan 2025 - Sep 2025)</h5>
-                        <canvas id="cost-trends-chart" height="300"></canvas>
-                    </div>
+    <!-- Model Status Banner -->
+    <div id="model-status-banner" class="mb-4"></div>
+    
+    <!-- Summary Cards Row -->
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="card text-center p-3">
+                <div class="h2 text-primary mb-0" id="works-this-month">0</div>
+                <small class="text-muted">WORKS THIS MONTH</small>
+                <div id="works-change" class="small"></div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center p-3">
+                <div class="h4 text-success mb-0" id="total-cost">₹0</div>
+                <small class="text-muted">TOTAL COST</small>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center p-3">
+                <div class="h4 text-info mb-0" id="avg-cost">₹0</div>
+                <small class="text-muted">AVG COST/WORK</small>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center p-3">
+                <div class="h2 text-warning mb-0" id="plots-over-budget">0</div>
+                <small class="text-muted">LOW BALANCE PLOTS</small>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center p-3">
+                <div class="h2 text-dark mb-0" id="active-plots">0</div>
+                <small class="text-muted">ACTIVE PLOTS</small>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center p-3">
+                <button id="train-models-btn" class="btn btn-primary btn-sm">
+                    <i class="fa fa-refresh"></i> TRAIN MODELS
+                </button>
+                <small class="text-muted d-block mt-1">Update ML Models</small>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Cost Trends (Jan 2025 - Sep 2025)</h5>
+                    <div id="cost-trends-chart"></div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fa fa-pie-chart text-primary"></i> Work Type Distribution</h5>
-                        <canvas id="work-distribution-chart" height="300"></canvas>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fa fa-pie-chart text-primary"></i> Work Type Distribution</h5>
+                    <div id="work-distribution-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Budget Alerts and Seasonal Patterns -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <i class="fa fa-exclamation-triangle"></i> Budget Alerts
+                </div>
+                <div class="card-body" id="budget-alerts-container">
+                    <div class="text-center text-muted">Loading alerts...</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Seasonal Patterns</h5>
+                    <div id="seasonal-patterns-container">
+                        <div class="text-center text-muted">Loading patterns...</div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Budget Alerts and Seasonal Patterns -->
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-warning text-dark">
-                        <i class="fa fa-exclamation-triangle"></i> Budget Alerts
-                    </div>
-                    <div class="card-body" id="budget-alerts-container">
-                        <div class="text-center text-muted">Loading alerts...</div>
-                    </div>
+    </div>
+    
+    <!-- Prediction Tools Row -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    Cost Prediction Tool
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Seasonal Patterns</h5>
-                        <div id="seasonal-patterns-container">
-                            <div class="text-center text-muted">Loading patterns...</div>
-                        </div>
+                <div class="card-body">
+                    <div class="form-group mb-3">
+                        <label>Work Type</label>
+                        <div id="work-type-field"></div>
                     </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Prediction Tools -->
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        Cost Prediction Tool
+                    <div class="form-group mb-3">
+                        <label>Plot</label>
+                        <div id="plot-field"></div>
                     </div>
-                    <div class="card-body" id="cost-prediction-container"></div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-success text-white">
-                        Budget Forecast
-                    </div>
-                    <div class="card-body" id="budget-forecast-container"></div>
+                    <button id="predict-cost-btn" class="btn btn-primary">
+                        <i class="fa fa-calculator"></i> PREDICT COST
+                    </button>
+                    <div id="prediction-result" class="mt-3"></div>
                 </div>
             </div>
         </div>
-        
-        <!-- Monthly Spending Table -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fa fa-table"></i> Monthly Spending by Plot</h5>
-                        <div id="monthly-spending-container">
-                            <div class="text-center text-muted">Loading data...</div>
-                        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    Budget Forecast
+                </div>
+                <div class="card-body">
+                    <div class="form-group mb-3">
+                        <label>Select Plot</label>
+                        <div id="forecast-plot-field"></div>
+                    </div>
+                    <button id="generate-forecast-btn" class="btn btn-success">
+                        <i class="fa fa-line-chart"></i> GENERATE FORECAST
+                    </button>
+                    <div id="forecast-result" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Monthly Spending Table -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fa fa-table"></i> Monthly Spending by Plot</h5>
+                    <div id="monthly-spending-table">
+                        <div class="text-center text-muted">Loading data...</div>
                     </div>
                 </div>
             </div>
