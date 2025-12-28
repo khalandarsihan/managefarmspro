@@ -1,18 +1,19 @@
 app_name = "managefarmspro"
 app_title = "Managefarmspro"
 app_publisher = "FigAi GenAi Solutions"
-app_description = "Farm Management App"
+app_description = "Farm Management App with ML-powered Predictive Analytics"
 app_email = "khasihanai@gmail.com"
 app_license = "mit"
+app_version = "1.1.0"  # Updated for ML Analytics
+
 # required_apps = []
 
 # Includes in <head>
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/managefarmspro/css/managefarmspro.css"
-# app_include_js = "/assets/managefarmspro/js/managefarmspro.js"
 app_include_css = "/assets/managefarmspro/css/custom_help_menu.css"
+# app_include_js = "/assets/managefarmspro/js/managefarmspro.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/managefarmspro/css/managefarmspro.css"
@@ -29,7 +30,7 @@ app_include_css = "/assets/managefarmspro/css/custom_help_menu.css"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {"Work": "public/js/work.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -47,16 +48,13 @@ app_include_css = "/assets/managefarmspro/css/custom_help_menu.css"
 # home_page = "/app/ManageFarmsPro"
 # app_home = "/app/managefarmspro"
 
-
 # website user home page (by Role)
 # role_home_page = {
 #     "Farm Manager": "managefarmspro"
-# 	}
-
+# }
 
 # website redirect
 website_redirects = [{"source": "/app/home", "target": "/app/managefarmspro"}]
-
 
 # Generators
 # ----------
@@ -69,15 +67,15 @@ website_redirects = [{"source": "/app/home", "target": "/app/managefarmspro"}]
 
 # add methods and filters to jinja environment
 # jinja = {
-# 	"methods": "managefarmspro.utils.jinja_methods",
-# 	"filters": "managefarmspro.utils.jinja_filters"
+#     "methods": "managefarmspro.utils.jinja_methods",
+#     "filters": "managefarmspro.utils.jinja_filters"
 # }
 
 # Installation
 # ------------
 
 # before_install = "managefarmspro.install.before_install"
-# after_install = "managefarmspro.install.after_install"
+after_install = "managefarmspro.setup.after_install"
 
 # Uninstallation
 # ------------
@@ -112,11 +110,11 @@ website_redirects = [{"source": "/app/home", "target": "/app/managefarmspro"}]
 # Permissions evaluated in scripted ways
 
 # permission_query_conditions = {
-# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
+#     "Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
 # }
 #
 # has_permission = {
-# 	"Event": "frappe.desk.doctype.event.event.has_permission",
+#     "Event": "frappe.desk.doctype.event.event.has_permission",
 # }
 
 # DocType Class
@@ -124,41 +122,42 @@ website_redirects = [{"source": "/app/home", "target": "/app/managefarmspro"}]
 # Override standard doctype classes
 
 # override_doctype_class = {
-# 	"ToDo": "custom_app.overrides.CustomToDo"
+#     "ToDo": "custom_app.overrides.CustomToDo"
 # }
 
 # Document Events
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+    "Work": {
+        "on_update": [
+            "managefarmspro.managefarmspro.doctype.work.work.calculate_total_cost",
+            "managefarmspro.managefarmspro.doctype.work.work.update_work_child",
+        ],
+        "on_submit": [
+            "managefarmspro.managefarmspro.doctype.work.work.update_work_child",
+            "managefarmspro.managefarmspro.ml_analytics.hooks.on_work_submit",  # ML Analytics
+        ],
+        "on_cancel": "managefarmspro.managefarmspro.doctype.work.work.update_work_child",
+        "after_insert": "managefarmspro.managefarmspro.ml_analytics.hooks.after_work_insert",  # ML Analytics
+    }
+}
 
-# Scheduled Tasks
+# Scheduled Tasks - ML Analytics
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"managefarmspro.tasks.all"
-# 	],
-# 	"daily": [
-# 		"managefarmspro.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"managefarmspro.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"managefarmspro.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"managefarmspro.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+    "daily": [
+        "managefarmspro.managefarmspro.ml_analytics.scheduler.daily_model_check"
+    ],
+    "weekly": [
+        "managefarmspro.managefarmspro.ml_analytics.scheduler.weekly_model_retrain"
+    ],
+    "monthly": [
+        "managefarmspro.managefarmspro.ml_analytics.scheduler.monthly_report_generation"
+    ],
+}
 
 # Testing
 # -------
@@ -169,14 +168,14 @@ website_redirects = [{"source": "/app/home", "target": "/app/managefarmspro"}]
 # ------------------------------
 #
 # override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "managefarmspro.event.get_events"
+#     "frappe.desk.doctype.event.event.get_events": "managefarmspro.event.get_events"
 # }
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
 # along with any modifications made in other Frappe apps
 # override_doctype_dashboards = {
-# 	"Task": "managefarmspro.task.get_dashboard_data"
+#     "Task": "managefarmspro.task.get_dashboard_data"
 # }
 
 # exempt linked doctypes from being automatically cancelled
@@ -202,51 +201,20 @@ website_redirects = [{"source": "/app/home", "target": "/app/managefarmspro"}]
 # --------------------
 
 # user_data_fields = [
-# 	{
-# 		"doctype": "{doctype_1}",
-# 		"filter_by": "{filter_by}",
-# 		"redact_fields": ["{field_1}", "{field_2}"],
-# 		"partial": 1,
-# 	},
-# 	{
-# 		"doctype": "{doctype_2}",
-# 		"filter_by": "{filter_by}",
-# 		"partial": 1,
-# 	},
-# 	{
-# 		"doctype": "{doctype_3}",
-# 		"strict": False,
-# 	},
-# 	{
-# 		"doctype": "{doctype_4}"
-# 	}
+#     {
+#         "doctype": "{doctype_1}",
+#         "filter_by": "{filter_by}",
+#         "redact_fields": ["{field_1}", "{field_2}"],
+#         "partial": 1,
+#     },
 # ]
 
 # Authentication and authorization
 # --------------------------------
 
 # auth_hooks = [
-# 	"managefarmspro.auth.validate"
+#     "managefarmspro.auth.validate"
 # ]
 
 # Automatically update python controller files with type annotations for this app.
 # export_python_type_annotations = True
-
-# default_log_clearing_doctypes = {
-
-# Include the custom JS file for Work Doctype
-doctype_js = {"Work": "public/js/work.js"}
-
-doc_events = {
-	"Work": {
-		"on_update": [
-			"managefarmspro.managefarmspro.doctype.work.work.calculate_total_cost",
-			"managefarmspro.managefarmspro.doctype.work.work.update_work_child",
-		],
-		"on_submit": [
-			"managefarmspro.managefarmspro.doctype.work.work.update_work_child",
-			# "managefarmspro.managefarmspro.doctype.work.work.on_submit"
-		],
-		"on_cancel": "managefarmspro.managefarmspro.doctype.work.work.update_work_child",
-	}
-}
