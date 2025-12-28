@@ -472,17 +472,30 @@ class MLAnalyticsDashboard {
 
 		if (!spending || spending.length === 0) {
 			$container.html(`
-                <tr>
-                    <td colspan="6" class="text-center text-muted p-4">
-                        <i class="fa fa-table fa-2x mb-2"></i><br>
-                        No spending data available for this month
-                    </td>
-                </tr>
-            `);
+				<div class="text-center text-muted p-4">
+					<i class="fa fa-table fa-2x mb-2"></i><br>
+					No spending data available for this month
+				</div>
+			`);
 			return;
 		}
 
-		let html = "";
+		let html = `
+			<div class="table-responsive">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th style="width: 25%;">Plot</th>
+							<th style="width: 12%; text-align: right;">Budget</th>
+							<th style="width: 12%; text-align: right;">Spent</th>
+							<th style="width: 12%; text-align: right;">Balance</th>
+							<th style="width: 25%;">Utilization</th>
+							<th style="width: 14%; text-align: center;">Status</th>
+						</tr>
+					</thead>
+					<tbody>
+		`;
+
 		spending.forEach((s) => {
 			const utilization = s.utilization || 0;
 			let progressClass = "bg-success";
@@ -497,28 +510,31 @@ class MLAnalyticsDashboard {
 			}
 
 			html += `
-                <tr>
-                    <td>
-                        <a href="/app/plot/${s.plot}">${s.plot_name || s.plot}</a>
-                        <br><small class="text-muted">${s.customer || ""}</small>
-                    </td>
-                    <td>₹${this.format_number(s.budget || 0)}</td>
-                    <td>₹${this.format_number(s.spent || 0)}</td>
-                    <td>₹${this.format_number(s.balance || 0)}</td>
-                    <td>
-                        <div class="progress" style="height: 20px;">
-                            <div class="progress-bar ${progressClass}" style="width: ${Math.min(
-				utilization,
-				100
-			)}%">
-                                ${utilization.toFixed(1)}%
-                            </div>
-                        </div>
-                    </td>
-                    <td>${statusBadge}</td>
-                </tr>
-            `;
+				<tr>
+					<td>
+						<a href="/app/plot/${s.plot}">${s.plot_name || s.plot}</a>
+						<br><small class="text-muted">${s.customer || ""}</small>
+					</td>
+					<td style="text-align: right;">₹${this.format_number(s.budget || 0)}</td>
+					<td style="text-align: right;">₹${this.format_number(s.spent || 0)}</td>
+					<td style="text-align: right;">₹${this.format_number(s.balance || 0)}</td>
+					<td>
+						<div class="progress" style="height: 20px; min-width: 100px;">
+							<div class="progress-bar ${progressClass}" style="width: ${Math.min(utilization, 100)}%">
+								${utilization.toFixed(1)}%
+							</div>
+						</div>
+					</td>
+					<td style="text-align: center;">${statusBadge}</td>
+				</tr>
+			`;
 		});
+
+		html += `
+					</tbody>
+				</table>
+			</div>
+		`;
 
 		$container.html(html);
 	}
