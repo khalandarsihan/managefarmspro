@@ -544,11 +544,13 @@ class MLPredictor:
             prediction = self.anomaly_detector.predict(X_scaled)[0]
             score = self.anomaly_detector.score_samples(X_scaled)[0]
             
-            is_anomaly = prediction == -1
+            # Convert numpy types to Python native types for JSON serialization
+            is_anomaly = bool(prediction == -1)
+            anomaly_score = float(score)
             
             return {
                 'is_anomaly': is_anomaly,
-                'anomaly_score': float(score),
+                'anomaly_score': anomaly_score,
                 'status': 'anomaly' if is_anomaly else 'normal',
                 'message': 'This work order has unusual characteristics' if is_anomaly else 'Work order appears normal'
             }
@@ -565,7 +567,7 @@ class MLPredictor:
         if not total_cost or not work_type:
             return {
                 'is_anomaly': False,
-                'anomaly_score': 0,
+                'anomaly_score': 0.0,
                 'status': 'unknown',
                 'message': 'Insufficient data for anomaly detection'
             }
@@ -587,19 +589,19 @@ class MLPredictor:
             std_cost = float(stats[0]['std_cost'])
             
             if std_cost > 0:
-                z_score = abs(total_cost - mean_cost) / std_cost
-                is_anomaly = z_score > 2.5  # More than 2.5 standard deviations
+                z_score = float(abs(total_cost - mean_cost) / std_cost)
+                is_anomaly = bool(z_score > 2.5)  # More than 2.5 standard deviations
                 
                 return {
                     'is_anomaly': is_anomaly,
-                    'anomaly_score': float(z_score),
+                    'anomaly_score': z_score,
                     'status': 'anomaly' if is_anomaly else 'normal',
                     'message': f'Cost is {z_score:.1f} standard deviations from mean' if is_anomaly else 'Cost is within normal range'
                 }
         
         return {
             'is_anomaly': False,
-            'anomaly_score': 0,
+            'anomaly_score': 0.0,
             'status': 'normal',
             'message': 'Work order appears normal (insufficient historical data for detailed analysis)'
         }
