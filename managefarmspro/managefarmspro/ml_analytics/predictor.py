@@ -36,6 +36,16 @@ DATA_END_DATE = '2025-09-30'
 # ==================================================
 
 
+def add_months_to_date(source_date, months):
+    """Add months to a date, handling year rollover correctly"""
+    month = source_date.month - 1 + months
+    year = source_date.year + month // 12
+    month = month % 12 + 1
+    day = min(source_date.day, [31, 29 if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0) else 28,
+                                  31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1])
+    return datetime(year, month, day)
+
+
 class MLPredictor:
     """
     Machine Learning Predictor for ManageFarmsPro
@@ -648,7 +658,8 @@ class MLPredictor:
             forecast_start = datetime(2025, 10, 1)
             
             for i in range(months_ahead):
-                forecast_date = forecast_start + timedelta(days=30 * i)
+                # Use proper month addition instead of timedelta
+                forecast_date = add_months_to_date(forecast_start, i)
                 forecast_month = forecast_date.month
                 
                 # Apply seasonality
@@ -705,7 +716,8 @@ class MLPredictor:
         forecast_start = datetime(2025, 10, 1)
         
         for i in range(months_ahead):
-            forecast_date = forecast_start + timedelta(days=30 * i)
+            # Use proper month addition instead of timedelta
+            forecast_date = add_months_to_date(forecast_start, i)
             forecasts.append({
                 'month': forecast_date.strftime('%Y-%m'),
                 'month_name': forecast_date.strftime('%B %Y'),
